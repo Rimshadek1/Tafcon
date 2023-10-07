@@ -1,0 +1,111 @@
+var express = require('express');
+var router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+var userHelper = require('../Helpers/userHelper')
+const fs = require('fs');
+const session = require('express-session');
+const adminHelper = require('../Helpers/adminHelper');
+
+//Session handling
+router.use(session({
+    secret: 'biefswbuaw1913hwdnsJKn',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 6000000 } // Adjust this as needed
+}));
+
+
+// Route for user registration
+router.post('/register', function (req, res) {
+    console.log(req.body);
+    console.log(req.files.image);
+
+    userHelper
+        .doSignup(req.body, req.body.otp)
+        .then(async (id) => {
+            let image = req.files.image;
+            let imageName = id + '.jpg';
+
+            if (image.mimetype === 'image/png') {
+                // check if image is PNG
+                imageName = id + '.png';
+            }
+
+            console.log(id);
+            const destinationDir = './public/Profile-pictures/';
+            if (!fs.existsSync(destinationDir)) {
+                fs.mkdirSync(destinationDir, { recursive: true });
+            }
+            await image.mv(destinationDir + imageName);
+            console.log(token);
+            res.json({ status: 'ok', token }); // Send a JSON response with a success status
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(400).json({ error: err }); // Set status code to 400 and send the error as JSON
+        });
+});
+
+
+router.post('/login', async (req, res) => {
+    try {
+        const response = await userHelper.doLogin(req.body).then((response) => {
+            if (response.status) {
+                req.session.loggedIn = true;
+                req.session.user = response.user;
+                res.json({ status: 'ok' });
+                console.log(req.session.user);
+
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ error: error });
+    }
+});
+router.get('/', (req, res) => {
+    console.log('started');
+})
+
+//Admin works
+router.post('/addevent', async (req, res) => {
+    try {
+        const response = await adminHelper.addEvent(req.body);
+        res.json({ status: 'ok' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while adding the event' });
+    }
+});
+
+router.get('/viewevent', adminHelper.getAllEvents);
+router.delete('/admin/delete-event/:eventId', (req, res) => {
+    const eventId = req.params.eventId;
+    console.log(eventId);
+    adminHelper.deleteEvent(eventId)
+        .then((response) => {
+            res.json({ status: 'ok' });
+        })
+});
+router.get('/edit-event/:id', async (req, res) => {
+    console.log(req.params.id);
+    try {
+        const isValidObjectId = ObjectId.isValid(req.params.id);
+        if (!isValidObjectId) {
+            throw new Error('Invalid id');
+        }
+        let event = await adminHelper.getEventDetails(req.params.id);
+        if (event) {
+            res.json(event); // Send event data as JSON
+        } else {
+            res.status(404).json({ error: 'Event not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: 'Bad request' });
+    }
+});
+
+
+module.exports = router;

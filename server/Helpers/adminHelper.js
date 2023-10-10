@@ -50,6 +50,55 @@ module.exports = {
         });
     }
     ,
+    updateEvent: (proId, proDetails) => {
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.eventCollection).updateOne({ _id: new ObjectId(proId) }, {
+                $set: {
+                    location: proDetails.location,
+                    time: proDetails.time,
+                    date: proDetails.date,
+                    event: proDetails.event,
+                    slot: proDetails.slot,
 
+                }
+            }).then((response) => {
+                resolve()
+            })
+
+        })
+    },
+    getEmpInfo: (req, res) => {
+        db.get().collection(collection.userCollection).find().toArray()
+            .then((users) => {
+                res.json(users); // Send events data as JSON response
+            })
+            .catch((error) => {
+                console.error(error);
+                res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
+            });
+    }, getUserDetails: (proId) => {
+        return new Promise((resolve, reject) => {
+            try {
+                db.get().collection(collection.userCollection).findOne({ _id: new ObjectId(proId) }).then((user) => {
+                    resolve(user);
+                })
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+    updateUser: (proId, proDetails) => {
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.userCollection).updateOne({ _id: new ObjectId(proId) }, {
+                $set: {
+                    role: proDetails.role,
+                }
+            }).then((response) => {
+                resolve()
+            })
+
+        })
+    }
 
 }

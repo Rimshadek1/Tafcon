@@ -1,70 +1,38 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Editevent() {
-    const { eventId } = useParams(); // Get the eventId from the URL
+    const { id } = useParams();
+    const [values, setValues] = useState();
+    const navigate = useNavigate();
 
-    const [event, setEvent] = useState({
-        Location: '',
-        Time: '',
-        Date: '',
-        Event_name: '',
-        Slot_left: '',
-        ppp: ''
-    });
     useEffect(() => {
-        if (eventId) { // Check if eventId is defined
-            // Fetch the event data using the eventId from your backend
-            axios.get(`http://localhost:3001/edit-event/${eventId}`)
-                .then((res) => {
-                    console.log(eventId);
-
-                    const eventData = res.data; // Assuming your backend returns the event data as JSON
-                    setEvent(eventData);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        }
-    }, [eventId]);
-
-
-
+        axios.get(`http://localhost:3001/editbutton/${id}`).then((res) => {
+            console.log(res.data);
+            setValues(res.data.event);
+        });
+    }, [id]); // Make sure to add 'id' as a dependency in the useEffect
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Perform your form submission logic here, e.g., send the updated event data to your backend
-        axios.post(`http://localhost:3001/admin/edit-eventss/${eventId}`, event)
+        axios.post(`http://localhost:3001/editbutton/${id}`, values)
             .then((res) => {
-                // Check the response for success
-                if (res.data.status === 'ok') {
-                    // Redirect to the appropriate page on success
-                    window.location.href = '/viewevents';
+                if (res.data.status === 'updated') {
+
+                    navigate('/viewevents')
                 } else {
-                    // Handle any specific error messages from the server and show an alert
-                    alert('Failed to update event. Please check your data and try again.');
+                    alert('not updated')
                 }
-            })
-            .catch((error) => {
-                // Handle network errors or unexpected errors
-                console.error(error);
-                alert('An error occurred while updating the event.');
             });
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setEvent({ ...event, [name]: value });
-    };
-
+    }
     return (
         <div className="container">
-            <div className="row">
+            <div className="row mt-4">
                 <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <form onSubmit={handleSubmit}>
                         <legend>Edit Event</legend>
 
-                        <div className="form-group">
+                        <div className="form-group mt-2">
                             <label htmlFor="Location">Location</label>
                             <input
                                 type="text"
@@ -72,12 +40,12 @@ function Editevent() {
                                 name="Location"
                                 id="Location"
                                 placeholder="Location"
-                                value={event.location}
-                                onChange={handleChange}
+                                value={values?.location || ""}
+                                onChange={e => setValues({ ...values, name: e.target.value })}
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group mt-2">
                             <label htmlFor="Time">Time</label>
                             <input
                                 type="text"
@@ -85,12 +53,13 @@ function Editevent() {
                                 name="Time"
                                 id="Time"
                                 placeholder="Time"
-                                value={event.time}
-                                onChange={handleChange}
+                                value={values?.time || ""}
+                                onChange={e => setValues({ ...values, time: e.target.value })}
+
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group mt-2">
                             <label htmlFor="Date">Date</label>
                             <input
                                 type="date"
@@ -98,12 +67,13 @@ function Editevent() {
                                 name="Date"
                                 id="Date"
                                 placeholder="Date"
-                                value={event.date}
-                                onChange={handleChange}
+                                value={values?.date || ""}
+                                onChange={e => setValues({ ...values, date: e.target.value })}
+
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group mt-2">
                             <label htmlFor="Event_name">Event Name</label>
                             <input
                                 type="text"
@@ -111,12 +81,13 @@ function Editevent() {
                                 name="Event_name"
                                 placeholder="Event_name"
                                 id="Event_name"
-                                value={event.event}
-                                onChange={handleChange}
+                                value={values?.event || ""}
+                                onChange={e => setValues({ ...values, event: e.target.value })}
+
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group mt-2">
                             <label htmlFor="Slot_left">Slot Left</label>
                             <input
                                 type="number"
@@ -124,12 +95,15 @@ function Editevent() {
                                 name="Slot_left"
                                 placeholder="Slot_left"
                                 id="Slot_left"
-                                value={event.slot}
-                                onChange={handleChange}
+                                value={values?.slot || ""}
+                                onChange={e => setValues({ ...values, slot: e.target.value })}
+
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-primary">Submit</button>
+                        <button type="submit" className="btn btn-primary mt-2">
+                            Update
+                        </button>
                     </form>
                 </div>
             </div>
@@ -137,4 +111,4 @@ function Editevent() {
     );
 }
 
-export default Editevent
+export default Editevent;

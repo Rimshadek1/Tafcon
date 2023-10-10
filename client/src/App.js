@@ -11,6 +11,8 @@ import Login from './Pages/Login/Login';
 import Addevents from './Pages/Admin/Addevents';
 import Viewevents from './Pages/Admin/Viewevents';
 import Editevent from './Pages/Admin/Editevent';
+import Empinfo from './Pages/Admin/Empinfo';
+import Editrole from './Pages/Admin/Editrole';
 function App() {
 
 
@@ -28,7 +30,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/addevents" element={<Addevents />} />
           <Route path="/viewevents" element={<Viewevents />} />
-          <Route path="/editevents/:eventId" component={Editevent} />
+          <Route path="/editevents" element={<Editevent />} />
+          <Route path="/editevents/:id" element={<Editevent />} />
+          <Route path="/editrole/:id" element={<Editrole />} />
+          <Route path="/empinfo" element={<Empinfo />} />
         </Routes>
       </Router>
     </div >

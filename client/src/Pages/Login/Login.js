@@ -18,7 +18,6 @@ function Login() {
 
         axios.post('http://localhost:3001/login', formData)
             .then((res) => {
-                console.log(res.data);
                 if (res.data.status === 'success') {
                     if (res.data.role === 'admin') {
                         navigate('/viewevents')

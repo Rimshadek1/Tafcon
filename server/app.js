@@ -12,15 +12,13 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken')
 var createError = require('http-errors');
 
-
-
 const app = express();
 app.use(cors({
     origin: ['http://localhost:4000'],
     methods: ['GET', 'POST', 'DELETE'],
     credentials: true
-}
-));
+}));
+app.use('/public', express.static(__dirname + '/public'));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -36,29 +34,13 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
-
-
 db.connect((err) => {
     if (err)
-        console.log('errrorrrr' + err);
+        console.log('error ' + err);
     else
         console.log("Database connected");
 })
 
-
-
 app.listen(3001, () => {
-    console.log('serverisrunning');
-})
-
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+    console.log('server is running');
 });
-
-module.exports = app;

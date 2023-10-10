@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './css/Viewevents.css'
 function Viewevents() {
     const [events, setEvents] = useState([]);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -56,6 +57,9 @@ function Viewevents() {
 
     };
 
+
+
+
     return (
         <div>
             <section>
@@ -64,6 +68,11 @@ function Viewevents() {
                         <div className="col">
                             <Link to="/addevents" className="btn btn-primary ml-auto">
                                 Add Event
+                            </Link>
+                        </div>
+                        <div className="col">
+                            <Link to="/empinfo" className="btn btn-info ml-auto">
+                                View Employees
                             </Link>
                         </div>
                         <div className="col">
@@ -104,7 +113,7 @@ function Viewevents() {
                                     <td>{event.event}</td>
                                     <td>{event.slot}</td>
                                     <td>
-                                        <Link to={`/editevents/${event._id}`} className="btn btn-primary">
+                                        <Link to={`/editevents/${event._id}`} className="btn btn-primary ">
                                             Edit
                                         </Link>
 
@@ -121,7 +130,7 @@ function Viewevents() {
                         </tbody>
                     </table>
                     {deleteSuccess && (
-                        <div className="alert alert-success" role="alert">
+                        <div className="alert alert-danger delete-alert" role="alert">
                             Event deleted successfully!
                         </div>
                     )}

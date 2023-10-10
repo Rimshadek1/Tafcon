@@ -65,7 +65,7 @@ function Signup() {
                     <h1>Register now</h1>
                     <h4>Create an account</h4>
                 </div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} method="POST" enctype="multipart/form-data">
                     <div className="section mb-5 p-2">
                         <div className="card">
                             <div className="card-body">

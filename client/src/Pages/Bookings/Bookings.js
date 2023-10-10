@@ -24,7 +24,7 @@ function Bookings() {
                 <div className="left">
                     <a className="headerButton goBack" data-bs-toggle="modal" data-bs-target="#DialogBasic" onClick={handleGoBack}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="40" viewBox="0 0 64 64" id="arrow">
-                            <path fill="#6236FF" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
+                            <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </a>
 
@@ -35,7 +35,7 @@ function Bookings() {
                 <div className="right">
                     <a href="/bookings" className="headerButton" data-bs-toggle="modal" data-bs-target="#DialogBasic">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" id="bag" fill="none">
-                            <g fill="none" fill-rule="evenodd" stroke="#6236FF" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
+                            <g fill="none" fill-rule="evenodd" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
                                 <path fill="none" d="M14.01373 20.0000001L5.66590392 20.0000001C2.59954235 20.0000001.247139589 18.8924486.915331812 14.4347827L1.69336385 8.39359272C2.10526317 6.16933642 3.52402748 5.31807783 4.76887874 5.31807783L14.9473685 5.31807783C16.2105264 5.31807783 17.5469108 6.23340964 18.0228834 8.39359272L18.8009154 14.4347827C19.3684211 18.3890161 17.0800916 20.0000001 14.01373 20.0000001zM14.1510298 5.09839819C14.1510298 2.71232585 12.216736 .7779932 9.83066366 .7779932L9.83066366.7779932C8.68166274.773163349 7.57805185 1.22619323 6.76386233 2.03694736 5.9496728 2.84770148 5.49199087 3.94938696 5.49199087 5.09839819L5.49199087 5.09839819"></path>
                                 <line x1="12.796" x2="12.751" y1="9.602" y2="9.602"></line>
                                 <line x1="6.966" x2="6.92" y1="9.602" y2="9.602"></line>
@@ -57,7 +57,7 @@ function Bookings() {
                         <ul class="listview image-listview flush">
                             <li class="active">
                                 <a href="/" class="item">
-                                    <div class="icon-box bg-primary">
+                                    <div class="icon-box bg-danger">
                                         <ion-icon name="arrow-down-outline"></ion-icon>
                                     </div>
 
@@ -112,7 +112,7 @@ function Bookings() {
                 </Link>
                 <Link to="/bookings" className="item active">
                     <div className="col">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="slack" width="25" height="25" stroke="#6236FF">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="slack" width="25" height="25" stroke="#FF396F">
                             <path d="M17.5 14a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 0 0-7 0v5a3.5 3.5 0 0 0 3.5 3.5zM16 5.5a1.5 1.5 0 0 1 3 0v5a1.5 1.5 0 0 1-3 0zM8.5 9H11a1 1 0 0 0 1-1V5.5A3.5 3.5 0 1 0 8.5 9zm0-5A1.5 1.5 0 0 1 10 5.5V7H8.5a1.5 1.5 0 0 1 0-3zM24 12h2.5A3.5 3.5 0 1 0 23 8.5V11a1 1 0 0 0 1 1zm1-3.5a1.5 1.5 0 1 1 1.5 1.5H25zM23.5 22H21a1 1 0 0 0-1 1v2.5a3.5 3.5 0 1 0 3.5-3.5zm0 5a1.5 1.5 0 0 1-1.5-1.5V24h1.5a1.5 1.5 0 0 1 0 3zM8 20H5.5A3.5 3.5 0 1 0 9 23.5V21a1 1 0 0 0-1-1zm-1 3.5A1.5 1.5 0 1 1 5.5 22H7zm7-9a3.5 3.5 0 0 0-3.5-3.5h-5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 0 3.5-3.5zM10.5 16h-5a1.5 1.5 0 0 1 0-3h5a1.5 1.5 0 0 1 0 3zm4 2a3.5 3.5 0 0 0-3.5 3.5v5a3.5 3.5 0 0 0 7 0v-5a3.5 3.5 0 0 0-3.5-3.5zm1.5 8.5a1.5 1.5 0 0 1-3 0v-5a1.5 1.5 0 0 1 3 0zM26.5 14h-5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 0 0-7zm0 5h-5a1.5 1.5 0 0 1 0-3h5a1.5 1.5 0 0 1 0 3z" data-name="Layer 20"></path></svg>
                         <strong>My Bookings</strong>
                     </div>

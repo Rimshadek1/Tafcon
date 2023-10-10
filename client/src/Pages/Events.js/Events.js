@@ -1,10 +1,12 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
-
-
 function Events() {
+    const [events, setEvents] = useState([]);
+
+
     // goback
     const navigate = useNavigate();
 
@@ -12,10 +14,17 @@ function Events() {
         e.preventDefault();
         navigate(-1);
     };
-    // goback
-    //dropdown
 
-    //dropdown
+    // Fetch events data
+
+    useEffect(() => {
+        axios.get('http://localhost:3001/getevents').then(res => {
+
+            console.log(res.data);
+            setEvents(res.data)
+
+        }).catch(err => console.log(err))
+    }, []);
     return (
         <div>
             {/* header */}
@@ -23,7 +32,7 @@ function Events() {
                 <div className="left">
                     <a className="headerButton goBack" data-bs-toggle="modal" data-bs-target="#DialogBasic" onClick={handleGoBack}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="40" viewBox="0 0 64 64" id="arrow">
-                            <path fill="#6236FF" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
+                            <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </a>
 
@@ -34,7 +43,7 @@ function Events() {
                 <div className="right">
                     <a href="/bookings" className="headerButton" data-bs-toggle="modal" data-bs-target="#DialogBasic">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" id="bag" fill="none">
-                            <g fill="none" fill-rule="evenodd" stroke="#6236FF" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
+                            <g fill="none" fill-rule="evenodd" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
                                 <path fill="none" d="M14.01373 20.0000001L5.66590392 20.0000001C2.59954235 20.0000001.247139589 18.8924486.915331812 14.4347827L1.69336385 8.39359272C2.10526317 6.16933642 3.52402748 5.31807783 4.76887874 5.31807783L14.9473685 5.31807783C16.2105264 5.31807783 17.5469108 6.23340964 18.0228834 8.39359272L18.8009154 14.4347827C19.3684211 18.3890161 17.0800916 20.0000001 14.01373 20.0000001zM14.1510298 5.09839819C14.1510298 2.71232585 12.216736 .7779932 9.83066366 .7779932L9.83066366.7779932C8.68166274.773163349 7.57805185 1.22619323 6.76386233 2.03694736 5.9496728 2.84770148 5.49199087 3.94938696 5.49199087 5.09839819L5.49199087 5.09839819"></path>
                                 <line x1="12.796" x2="12.751" y1="9.602" y2="9.602"></line>
                                 <line x1="6.966" x2="6.92" y1="9.602" y2="9.602"></line>
@@ -50,44 +59,36 @@ function Events() {
             {/* body */}
 
             <div id="appCapsule">
-                <div className="section mt-2">
-                    <div className="card-block mb-2">
-                        <div className="card-main">
-                            <div className="card-button dropdown">
-                                <button type="button" className="btn btn-link btn-icon" data-bs-toggle="dropdown">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" id="dots">
-                                        <path d="M10.001 7.8a2.2 2.2 0 1 0 0 4.402A2.2 2.2 0 0 0 10 7.8zm-7 0a2.2 2.2 0 1 0 0 4.402A2.2 2.2 0 0 0 3 7.8zm14 0a2.2 2.2 0 1 0 0 4.402A2.2 2.2 0 0 0 17 7.8z" fill="#FFFFFF"></path>
-                                    </svg>
-                                </button>
-                                <div className="dropdown-menu dropdown-menu-end">
-                                    <a className="dropdown-item" href="/">
-                                        Add
-                                    </a>
+                {events.map((event, index) => (
+                    <div className="section mt-2"
+                        key={index}
+                    >
+                        <div className="card-block mb-2">
+                            <div className="card-main">
+                                <div className="card-button dropdown">
+                                    <button className="btn btn-success rounded">Add</button>
                                 </div>
-                            </div>
-                            <div className="balance">
-                                <span className="label">Location</span>
-                                <h1 className="title">Vengara</h1>
-                            </div>
-                            <div className="in">
-                                <div className="card-number">
-                                    <span className="label">Date</span>
-                                    2023-5-25
+                                <div className="balance">
+                                    <span className="label">Location</span>
+                                    <h1 className="title">{event.location}</h1>
                                 </div>
-                                <div className="bottom">
-                                    <div className="card-expiry">
-                                        <span className="label">Slots</span>
-                                        8
+                                <div className="in">
+                                    <div className="card-number">
+                                        <span className="label">Date</span>
+                                        {event.date}
                                     </div>
-                                    <div className="card-ccv">
-                                        <span className="label">Price</span>
-                                        440
+                                    <div className="bottom">
+                                        <div className="card-expiry">
+                                            <span className="label">Slots</span>
+                                            {event.slot}
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                ))}
             </div>
 
             {/* body */}
@@ -119,7 +120,7 @@ function Events() {
                 </Link>
                 <Link to="/events" className="item active">
                     <div className="col">
-                        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 48 48" viewBox="0 0 48 48" id="card-payment" width="25" height="25" stroke="#6236FF">
+                        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 48 48" viewBox="0 0 48 48" id="card-payment" width="25" height="25" stroke="#FF396F">
                             <path d="M44,11H4c-0.55,0-1,0.45-1,1v6v18c0,0.55,0.45,1,1,1h40c0.55,0,1-0.45,1-1V18v-6C45,11.45,44.55,11,44,11z M43,35H5V19h38
 		V35z M43,17H5v-4h38V17z"></path><path d="M9,33h6c0.55,0,1-0.45,1-1v-6c0-0.55-0.45-1-1-1H9c-0.55,0-1,0.45-1,1v6C8,32.55,8.45,33,9,33z M10,27h4v4h-4V27z"></path></svg>
                         <strong>Event</strong>

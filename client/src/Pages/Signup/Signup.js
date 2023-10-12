@@ -27,7 +27,7 @@ function Signup() {
         formData.append('otp', otp);
         formData.append('password', password);
         formData.append('image', image);
-        formData.append('role', 'user');
+        formData.append('role', 'class-C');
 
         axios.post('http://localhost:3001/register', formData)
             .then((res) => {

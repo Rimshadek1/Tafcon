@@ -53,9 +53,7 @@ function Login() {
                 </div>
                 <div className="pageTitle"></div>
                 <div className="right">
-                    <a className="btn btn-success ml-auto" href="/admin">
-                        Admin
-                    </a>
+
                 </div>
             </div>
             {/* * App Header */}

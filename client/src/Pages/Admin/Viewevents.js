@@ -111,12 +111,14 @@ function Viewevents() {
                                     <td>{event.time}</td>
                                     <td>{event.date}</td>
                                     <td>{event.event}</td>
-                                    <td>{event.slot}</td>
                                     <td>
-                                        <Link to={`/editevents/${event._id}`} className="btn btn-primary ">
+                                        {event.slot === 0 ? "Slot is full" : event.slot}
+                                    </td>
+                                    <td>
+                                        <Link to={`/editevents/${event._id}`} className="btn btn-primary">
                                             Edit
                                         </Link>
-
+                                        &nbsp;&nbsp;
 
                                         <button
                                             className="btn btn-danger"
@@ -127,6 +129,7 @@ function Viewevents() {
                                     </td>
                                 </tr>
                             ))}
+
                         </tbody>
                     </table>
                     {deleteSuccess && (

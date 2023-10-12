@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import randomColor from 'randomcolor';
 
 function Events() {
     const [events, setEvents] = useState([]);
@@ -15,6 +16,15 @@ function Events() {
         navigate(-1);
     };
 
+    // Function to generate a random dark color
+    function getRandomDarkColor() {
+        const color = randomColor({
+            luminosity: 'dark', // Generates dark colors
+        });
+        return color;
+    }
+
+
     // Fetch events data
 
     useEffect(() => {
@@ -25,6 +35,29 @@ function Events() {
 
         }).catch(err => console.log(err))
     }, []);
+
+
+    function handleAddButtonClick(eventId) {
+        const confirmed = window.confirm('Do you want to add this event to your list?');
+
+        if (confirmed) {
+            axios.post(`http://localhost:3001/confirmbooking/${eventId}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        alert('Booking confirmed');
+                        navigate('/bookings');
+                    } else if (res.data.status === 'already booked') {
+                        alert('This event is already booked.');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            // Handle the case where the user clicked cancel
+            console.log('Add action canceled.');
+        }
+    }
     return (
         <div>
             {/* header */}
@@ -63,10 +96,12 @@ function Events() {
                     <div className="section mt-2"
                         key={index}
                     >
-                        <div className="card-block mb-2">
+                        <div className="card-block mb-2" style={{ backgroundColor: getRandomDarkColor() }}>
                             <div className="card-main">
                                 <div className="card-button dropdown">
-                                    <button className="btn btn-success rounded">Add</button>
+                                    <button className="btn btn-success rounded" onClick={() => handleAddButtonClick(event._id)}>
+                                        Add
+                                    </button>
                                 </div>
                                 <div className="balance">
                                     <span className="label">Location</span>

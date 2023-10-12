@@ -15,13 +15,37 @@ module.exports = {
     getAllEvents: (req, res) => {
         db.get().collection(collection.eventCollection).find().toArray()
             .then((events) => {
-                res.json(events); // Send events data as JSON response
+                const updatedEvents = events.map((event) => {
+                    if (event.slot === 0) {
+                        return {
+                            ...event,
+                            slotStatus: "Slot is full",
+                        };
+                    }
+                    return event;
+                });
+                res.json(updatedEvents); // Send updated events data as JSON response
             })
             .catch((error) => {
                 console.error(error);
                 res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
             });
     }
+
+    ,
+    getAllEventsUser: (req, res) => {
+        db.get().collection(collection.eventCollection)
+            .find({ slot: { $gt: 0 } }) // Filter events with a slot greater than 0
+            .toArray()
+            .then((events) => {
+                res.json(events); // Send filtered events data as JSON response
+            })
+            .catch((error) => {
+                console.error(error);
+                res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
+            });
+    }
+
     ,
     deleteEvent: (proId) => {
         return new Promise((resolve, reject) => {
@@ -76,7 +100,8 @@ module.exports = {
                 console.error(error);
                 res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
             });
-    }, getUserDetails: (proId) => {
+    },
+    getUserDetails: (proId) => {
         return new Promise((resolve, reject) => {
             try {
                 db.get().collection(collection.userCollection).findOne({ _id: new ObjectId(proId) }).then((user) => {
@@ -99,6 +124,31 @@ module.exports = {
             })
 
         })
+    },
+    confirmedPdf: (proId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const bookingDetails = await db.get().collection(collection.bookCollection).find({
+                    'events.item': new ObjectId(proId)
+                }).toArray();
+
+                if (bookingDetails && bookingDetails.length > 0) {
+                    const userIds = bookingDetails.map((booking) => booking.user);
+
+                    const users = await db.get().collection(collection.userCollection).find({
+                        _id: { $in: userIds.map((userId) => new ObjectId(userId)) }
+                    }).toArray();
+
+                    resolve(users);
+                } else {
+                    reject("No booking details found for the provided proId");
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
+
+
 
 }

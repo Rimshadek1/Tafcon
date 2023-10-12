@@ -17,7 +17,8 @@ const verifyUser = (req, res, next) => {
             if (err) {
                 return res.json({ error: 'Error with token' });
             } else {
-                if (decoded.role === 'user') {
+                if (
+                    decoded.role === 'class-A' || 'class-B' || 'class-C' || 'supervisor' || 'main-boy' || 'captain') {
                     next();
                 } else {
                     return res.json({ error: 'Not user' });
@@ -95,11 +96,11 @@ router.post('/login', (req, res) => {
             res.status(500).json({ status: 'error', message: 'An error occurred during login.' });
         });
 });
-router.get('/', verifyUser, (req, res) => {
+router.get('/', (req, res) => {
     const token = req.cookies.token;
     jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
 
-        res.json({ status: 'success', id: decoded.id });
+        res.json({ status: 'success', id: decoded.id, role: decoded.role });
     })
 })
 
@@ -139,9 +140,34 @@ router.get('/profile-image', verifyUser, (req, res) => {
     });
 });
 
-router.get('/getevents', adminHelper.getAllEvents)
+router.get('/getevents', adminHelper.getAllEventsUser)
 
+router.post('/confirmbooking/:proId', (req, res) => {
+    const proId = req.params.proId;
+    const token = req.cookies.token;
+    jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+        const UserId = decoded.id;
+        userHelper.Booking(proId, UserId).then((response) => {
+            if (response === 'success') {
+                res.json({ status: 'success' });
+            } else if (response === 'already booked') {
+                res.json({ status: 'already booked' });
+            }
+        });
+    });
+});
 
+router.get('/bookedevents', verifyUser, (req, res) => {
+    const token = req.cookies.token;
+    jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+        const UserId = decoded.id;
+        console.log(UserId);
+        userHelper.getEventList(UserId).then((response) => {
+
+            res.json({ status: 'success', response });
+        });
+    })
+})
 
 
 
@@ -206,5 +232,18 @@ router.post('/edituser/:userId', (req, res) => {
 
     })
 })
+router.get('/confirmedpdf/:proId', (req, res) => {
+    const proId = req.params.proId;
+
+    adminHelper.confirmedPdf(proId)
+        .then((userData) => {
+            res.json({ users: userData });
+        })
+        .catch((error) => {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        });
+});
+
 
 module.exports = router;

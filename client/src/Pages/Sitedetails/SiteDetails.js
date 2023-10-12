@@ -1,12 +1,15 @@
+import React, { useState } from 'react'
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import './Booking.css'
-function Bookings() {
-    // goback
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+function SiteDetails() {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
+
+
+
+    // goback
 
     const handleGoBack = (e) => {
         e.preventDefault();
@@ -14,20 +17,19 @@ function Bookings() {
     };
     // goback
 
-    // getting booked events
+    //getevents
     useEffect(() => {
-        axios.get('http://localhost:3001/bookedevents')
+        // Make an HTTP GET request to your backend endpoint that retrieves events
+        axios.get('http://localhost:3001/viewevent')
             .then((res) => {
-                if (res.data) {
-                    // Reverse the order of events to implement LIFO
-                    const reversedEvents = res.data.response.reverse();
-                    setEvents(reversedEvents);
-                }
+                console.log(res.data);
+                setEvents(res.data); // Set the events data received from the backend
             })
             .catch((error) => {
                 console.error(error);
             });
     }, []);
+
     return (
         <div>
             {/* header */}
@@ -41,7 +43,7 @@ function Bookings() {
 
                 </div>
                 <div className="pageTitle">
-                    Coming Bookings
+                    Site Details
                 </div>
                 <div className="right">
                     <a href="/bookings" className="headerButton" data-bs-toggle="modal" data-bs-target="#DialogBasic">
@@ -59,8 +61,8 @@ function Bookings() {
                 </div>
             </div>
             {/* header */}
-            {/* body */}
 
+            {/* body */}
             <div id="appCapsule">
                 <div class="section full">
                     {events.map((event, index) => (
@@ -71,47 +73,33 @@ function Bookings() {
                                     <div class="icon-box bg-danger">
                                         <img src="logo/logoonly.png" alt="" />
                                     </div>
-
-
                                     <div class="in">
-                                        <div className="event-card" key={event.event._id}>
+                                        <div className="event-card" key={event._id}>
                                             <div>
                                                 <div className="mb-05">
-                                                    <strong>Location:</strong> {event.event.location}
+                                                    <strong>Location:</strong> {event.location}
                                                 </div>
                                                 <div className="mb-05">
-                                                    <strong>Event_name:</strong> {event.event.event}
+                                                    <strong>Event_name:</strong> {event.event}
                                                 </div>
                                                 <div className="text-small mb-05">
-                                                    <strong>Date:</strong> {event.event.date}
+                                                    <strong>Date:</strong> {event.date}
                                                 </div>
                                                 <div className="text-small mb-05">
-                                                    <strong>Time:</strong> {event.event.time}
+                                                    <strong>Time:</strong> {event.time}
                                                 </div>
 
                                             </div>
                                         </div>
+                                        <Link to={`/confirmed/${event._id}`} className='btn btn-success'>confirmed list</Link>
                                     </div>
-
-
                                 </a>
                             </li>
-
                         </ul>
                     ))}
-
                 </div>
-
-
-
-
             </div>
-
-
             {/* body */}
-
-
-
 
             {/* footer */}
             <div className="appBottomMenu">
@@ -155,8 +143,10 @@ function Bookings() {
                 </Link>
             </div >
             {/* footer */}
+
+
         </div >
     )
 }
 
-export default Bookings
+export default SiteDetails

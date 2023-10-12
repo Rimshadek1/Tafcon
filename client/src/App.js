@@ -13,6 +13,8 @@ import Viewevents from './Pages/Admin/Viewevents';
 import Editevent from './Pages/Admin/Editevent';
 import Empinfo from './Pages/Admin/Empinfo';
 import Editrole from './Pages/Admin/Editrole';
+import SiteDetails from './Pages/Sitedetails/SiteDetails';
+import Confirmedpdf from './Pages/Confirmedpdf/Confirmedpdf';
 function App() {
 
 
@@ -34,6 +36,8 @@ function App() {
           <Route path="/editevents/:id" element={<Editevent />} />
           <Route path="/editrole/:id" element={<Editrole />} />
           <Route path="/empinfo" element={<Empinfo />} />
+          <Route path="/sitedetails" element={<SiteDetails />} />
+          <Route path="/confirmed/:id" element={<Confirmedpdf />} />
         </Routes>
       </Router>
     </div >

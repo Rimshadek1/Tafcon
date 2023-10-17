@@ -24,6 +24,24 @@ function Confirmedpdf() {
             });
     }, [id]);
 
+    function handleOnsite(userId) {
+        const data = { eventId: id };
+        axios
+            .post(`http://localhost:3001/salary/${userId}`, data)
+            .then((response) => {
+                if (response.data.status === 'success') {
+                    alert('Salary processing successful');
+                } else {
+                    alert('Salary processing error: ' + response.data.message);
+                    // Handle the error as needed
+                }
+            })
+            .catch((error) => {
+                alert('Network error: ' + error.message);
+                // Handle network errors or other unexpected errors
+            });
+    }
+
     return (
         <div>
             <section>
@@ -49,9 +67,13 @@ function Confirmedpdf() {
                                         <td>{user.number}</td>
                                         <td>{user.role}</td>
                                         <td>
-                                            <Link className="btn btn-danger">Fine</Link>
+                                            <Link to={`/ot/${user._id}?eventId=${id}`} className="btn btn-info">
+                                                Ot</Link>
                                             &nbsp;&nbsp;
-                                            <button className="btn btn-success">Onsite</button>
+                                            <Link to={`/fine/${user._id}?eventId=${id}`} className="btn btn-danger">
+                                                Fine</Link>
+                                            &nbsp;&nbsp;
+                                            <button className="btn btn-success" onClick={() => handleOnsite(user._id)}>Onsite</button>
                                         </td>
                                     </tr>
                                 ))}
@@ -59,8 +81,8 @@ function Confirmedpdf() {
                         </table>
                     </div>
                 </div>
-            </section>
-        </div>
+            </section >
+        </div >
     );
 }
 

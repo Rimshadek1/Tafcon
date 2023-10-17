@@ -1,5 +1,9 @@
 module.exports = {
     userCollection: 'userdata',
     eventCollection: 'events',
-    bookCollection: 'Eventbooking'
+    bookCollection: 'Eventbooking',
+    fineCollection: 'fine',
+    otCollection: 'ot',
+    withdrawCollection: 'withdraw',
+    salaryCollection: 'salary'
 }

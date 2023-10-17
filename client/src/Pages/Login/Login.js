@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../UserContext/UserContext';
 
 function Login() {
 
     const [number, setNumber] = useState()
     const [password, setPassword] = useState()
     const navigate = useNavigate();
+    const { setLoggedInUsername, setId } = useContext(UserContext);
+
 
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
@@ -20,8 +23,12 @@ function Login() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     if (res.data.role === 'admin') {
+                        setLoggedInUsername(number)
+                        setId(res.data.id)
                         navigate('/viewevents')
                     } else {
+                        setLoggedInUsername(number)
+                        setId(res.data.id)
                         navigate('/')
                     }
                 }
@@ -39,8 +46,8 @@ function Login() {
 
 
     };
-
-
+    console.log('setLoggedInUsername is a function:', typeof setLoggedInUsername === 'function');
+    console.log('setId is a function:', typeof setId === 'function');
 
     return (
         <div>

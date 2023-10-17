@@ -22,13 +22,18 @@ function SiteDetails() {
         // Make an HTTP GET request to your backend endpoint that retrieves events
         axios.get('http://localhost:3001/viewevent')
             .then((res) => {
-                console.log(res.data);
-                setEvents(res.data); // Set the events data received from the backend
+                if (Array.isArray(res.data)) {
+                    // Verify that the response data is an array
+                    setEvents(res.data); // Set the events data received from the backend
+                } else {
+                    console.error('Data received from the server is not an array.');
+                }
             })
             .catch((error) => {
                 console.error(error);
             });
     }, []);
+
 
     return (
         <div>

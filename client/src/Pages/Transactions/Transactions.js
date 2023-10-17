@@ -1,38 +1,110 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './transactions.css';
 function Transactions() {
-    // goback
     const navigate = useNavigate();
+    const [details, setDetails] = useState([]);
+    const [detailsFine, setDetailsFine] = useState([]);
+    const [detailsOt, setDetailsOt] = useState([]);
+    const [detailsWithdraw, setDetailsWithdraw] = useState([]);
+    const [mergedDetails, setMergedDetails] = useState([]);
+    useEffect(() => {
+        // Fetch salary details
+        axios.get('http://localhost:3001/viewSalary')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setDetails(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching salary data:', error);
+                alert('Failed to fetch data from the server');
+            });
+
+        // Fetch fine details
+        axios.get('http://localhost:3001/viewFine')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setDetailsFine(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching fine data:', error);
+                alert('Failed to fetch data from the server');
+            });
+
+        // Fetch overtime details
+        axios.get('http://localhost:3001/ot')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setDetailsOt(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching OT data:', error);
+                alert('Failed to fetch data from the server');
+            });
+    }, []);
+    // Fetch withdraw details
+    useEffect(() => {
+        // Fetch withdraw details
+        axios.get('http://localhost:3001/withdrawf')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    console.log(res.data.details);
+                    setDetailsWithdraw(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching withdraw data:', error);
+                alert('Failed to fetch data from the server');
+            });
+    }, []);
+
+    // Merge salary, fine, OT, and withdraw details
+    useEffect(() => {
+        const merged = [...details, ...detailsFine, ...detailsOt, ...detailsWithdraw];
+        // Sort the merged array by date in descending order
+        const sortedDetails = merged.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setMergedDetails(sortedDetails);
+    }, [details, detailsFine, detailsOt, detailsWithdraw]);
 
     const handleGoBack = (e) => {
         e.preventDefault();
         navigate(-1);
     };
-    // goback
-    //load more
+
     const handleLoadMoreClick = (e) => {
         e.preventDefault();
         window.location.reload();
     };
-    //load more
+
     return (
+
         <div>
-            {/* header */}
             <div className="appHeader">
                 <div className="left">
-                    <a className="headerButton goBack" data-bs-toggle="modal" data-bs-target="#DialogBasic" onClick={handleGoBack}>
+                    <a className="headerButton goBack" onClick={handleGoBack}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="40" viewBox="0 0 64 64" id="arrow">
                             <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </a>
-
                 </div>
                 <div className="pageTitle">
                     Transactions
                 </div>
                 <div className="right">
-                    <a href="/bookings" className="headerButton" data-bs-toggle="modal" data-bs-target="#DialogBasic">
+                    <Link to="/bookings" className="headerButton">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" id="bag" fill="none">
                             <g fill="none" fill-rule="evenodd" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
                                 <path fill="none" d="M14.01373 20.0000001L5.66590392 20.0000001C2.59954235 20.0000001.247139589 18.8924486.915331812 14.4347827L1.69336385 8.39359272C2.10526317 6.16933642 3.52402748 5.31807783 4.76887874 5.31807783L14.9473685 5.31807783C16.2105264 5.31807783 17.5469108 6.23340964 18.0228834 8.39359272L18.8009154 14.4347827C19.3684211 18.3890161 17.0800916 20.0000001 14.01373 20.0000001zM14.1510298 5.09839819C14.1510298 2.71232585 12.216736 .7779932 9.83066366 .7779932L9.83066366.7779932C8.68166274.773163349 7.57805185 1.22619323 6.76386233 2.03694736 5.9496728 2.84770148 5.49199087 3.94938696 5.49199087 5.09839819L5.49199087 5.09839819"></path>
@@ -40,47 +112,78 @@ function Transactions() {
                                 <line x1="6.966" x2="6.92" y1="9.602" y2="9.602"></line>
                             </g>
                         </svg>
-                    </a>
-
-
-
+                    </Link>
                 </div>
             </div>
-            {/* header */}
-            {/*body*/}
-            <div id="appCapsule">
-                <div className="section mt-2">
-                    <div className="section-title">08-01-2013</div>
-                    <div className="transactions">
-                        <a href="/" className="item">
-                            <div className="detail">
-                                <img src="assets/img/sample/brand/1.jpg" alt="img" className="image-block imaged w48" />
 
-                                <div>
-                                    <strong>Event is Marriage</strong>
-                                    <p>Fine 200</p>
-                                </div>
 
-                                <div>
-                                    <strong>Withdraw</strong>
-                                    <p>Amount</p>
-                                </div>
+            {/* body */}
+
+            <div className="appCapsule my-custom-margin">
+                {Array.isArray(mergedDetails) && mergedDetails.length > 0 ? (
+                    mergedDetails.map((detail, index) => (
+
+                        <div className="section" key={index}>
+                            <div className="section-title">
+                                Date: {`${new Date(detail.date).getDate()}-${new Date(detail.date).getMonth() + 1}-${new Date(detail.date).getFullYear()}`}
                             </div>
+                            <div className="transactions">
+                                <Link to="/" className="item">
+                                    <div className="detail">
+                                        {
+                                            detail.finefor ? (
+                                                <img src="transaction/fine.jpg" alt="img" className="image-block imaged w48" />
+                                            ) : detail.otfor ? (
+                                                <img src="transaction/ot.jpg" alt="img" className="image-block imaged w48" />
+                                            ) : detail.amount ? (
+                                                <img src="transaction/withdraw.jpg" alt="img" className="image-block imaged w48" />
+                                            ) : (
+                                                <img src="transaction/salary.jpg" alt="img" className="image-block imaged w48" />
+                                            )
+                                        }
+                                        ,
+                                        <div>
+                                            {detail.finefor ? (
+                                                <strong>Fine for: {detail.finefor}</strong>
+                                            ) : detail.otfor ? (
+                                                <strong>OT for: {detail.otfor}</strong>
+                                            ) : detail.amount ? (
+                                                <strong>withdraw for: Personal</strong>
+                                            ) : (
+                                                <strong>Salary of Event: {detail.event}</strong>
+                                            )},
 
-                            <div className="right">
-                                <div className="price text-success">+₹ 8888</div>
+                                        </div>
+                                    </div>
+                                    <div className="right">
+                                        {detail.fine ? (
+                                            <div className="price text-danger">-₹ {Math.abs(detail.fine)}</div>
+                                        ) : detail.ot ? (
+                                            <div className="price text-success">₹ {detail.ot}</div>
+                                        ) : detail.amount ? (
+                                            <div className="price text-danger">₹ {detail.amount}</div>
+                                        ) : (
+                                            <div className="price text-success">₹ {detail.salary}</div>
+                                        )},
+
+                                    </div>
+                                </Link>
                             </div>
-                        </a>
+                        </div>
+                    ))
+                ) : (
+                    <div className="section">
+                        <div className="section-title">No details available.</div>
                     </div>
-                    <div class="section mt-2 mb-2">
-                        <a onClick={handleLoadMoreClick} class="btn btn-danger btn-block btn-lg">Load More</a>
-                    </div>
+                )
+                }
+
+
+                <div className="section mt-2 mb-2">
+                    <a onClick={handleLoadMoreClick} className="btn btn-danger btn-block btn-lg">Load More</a>
                 </div>
-
-            </div>
-
-            {/*body*/}
-
+            </div >
+            {/* body */}
             {/* footer */}
             <div className="appBottomMenu">
                 <Link to="/" className="item">
@@ -95,10 +198,12 @@ function Transactions() {
                 </Link>
                 <Link to="/transactions" className="item active">
                     <div className="col">
-                        <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 16 16" id="text-file" width="25" height="25" >
-                            <polygon fill="none" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round" points="13 14 3 14 3 2 9.98 2 11.51 3.35 13 4.79 13 14"></polygon><polyline fill="none" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round" points="9.78 2.54 9.78 5.54 12.78 5.54">
-                            </polyline><line x1="5" x2="8" y1="8" y2="8" fill="none" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round">
-                            </line><line x1="5" x2="9" y1="10" y2="10" fill="none" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round"></line>
+                        <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 16 16" id="text-file" width="25" height="25"><polygon fill="none" stroke="#FF396F" stroke-linecap="round"
+                            stroke-linejoin="round" points="13 14 3 14 3 2 9.98 2 11.51 3.35 13 4.79 13 14"></polygon><polyline
+                                fill="none" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round"
+                                points="9.78 2.54 9.78 5.54 12.78 5.54"></polyline><line x1="5" x2="8" y1="8" y2="8" fill="none"
+                                    stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round"></line><line x1="5" x2="9" y1="10"
+                                        y2="10" fill="none" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round"></line>
                             <line x1="5" x2="10" y1="12" y2="12" fill="none" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round">
                             </line></svg>
                         <strong>Transaction</strong>
@@ -113,7 +218,8 @@ function Transactions() {
                 </Link>
                 <Link to="/events" className="item">
                     <div className="col">
-                        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 48 48" viewBox="0 0 48 48" id="card-payment" width="25" height="25"><path d="M44,11H4c-0.55,0-1,0.45-1,1v6v18c0,0.55,0.45,1,1,1h40c0.55,0,1-0.45,1-1V18v-6C45,11.45,44.55,11,44,11z M43,35H5V19h38
+                        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 48 48" viewBox="0 0 48 48" id="card-payment" width="25" height="25" stroke="#231f20">
+                            <path d="M44,11H4c-0.55,0-1,0.45-1,1v6v18c0,0.55,0.45,1,1,1h40c0.55,0,1-0.45,1-1V18v-6C45,11.45,44.55,11,44,11z M43,35H5V19h38
 		V35z M43,17H5v-4h38V17z"></path><path d="M9,33h6c0.55,0,1-0.45,1-1v-6c0-0.55-0.45-1-1-1H9c-0.55,0-1,0.45-1,1v6C8,32.55,8.45,33,9,33z M10,27h4v4h-4V27z"></path></svg>
                         <strong>Event</strong>
                     </div>
@@ -127,9 +233,9 @@ function Transactions() {
                 </Link>
             </div >
             {/* footer */}
+
         </div >
-    )
+    );
 }
 
-
-export default Transactions
+export default Transactions;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import './assets/css/style.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -9,6 +9,99 @@ function Home() {
     const [suc, setSuc] = useState();
     const [imageUrl, setImageUrl] = useState('');
     const [events, setEvents] = useState([]);
+    const [fine, setFine] = useState(0)
+    const [withdraw, setWithraw] = useState(0)
+    const [income, setIncome] = useState(0)
+    const [balance, setBalance] = useState(0)
+    //all amounts
+    useEffect(() => {
+        axios.get('http://localhost:3001/amount').then(res => {
+            if (res.data) {
+                setFine(res.data.fine.totalFine)
+                setWithraw(res.data.withdraw.totalWithdraw)
+                setIncome(res.data.income.total)
+                setBalance(res.data.balance)
+            }
+
+
+        }).catch(err => console.log(err))
+    }, []);
+
+    //transactions
+
+    const [details, setDetails] = useState([]);
+    const [detailsFine, setDetailsFine] = useState([]);
+    const [detailsOt, setDetailsOt] = useState([]);
+    const [detailsWithdraw, setDetailsWithdraw] = useState([]);
+    const [mergedDetails, setMergedDetails] = useState([]);
+    useEffect(() => {
+        // Fetch salary details
+        axios.get('http://localhost:3001/viewSalary')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setDetails(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching salary data:', error);
+                alert('Failed to fetch data from the server');
+            });
+
+        // Fetch fine details
+        axios.get('http://localhost:3001/viewFine')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setDetailsFine(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching fine data:', error);
+                alert('Failed to fetch data from the server');
+            });
+
+        // Fetch overtime details
+        axios.get('http://localhost:3001/ot')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setDetailsOt(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching OT data:', error);
+                alert('Failed to fetch data from the server');
+            });
+    }, []);
+    // Fetch withdraw details
+    useEffect(() => {
+        // Fetch withdraw details
+        axios.get('http://localhost:3001/withdrawf')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setDetailsWithdraw(res.data.details);
+                } else {
+                    alert('Something went wrong');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching withdraw data:', error);
+                alert('Failed to fetch data from the server');
+            });
+    }, []);
+
+    // Merge salary, fine, OT, and withdraw details
+    useEffect(() => {
+        const merged = [...details, ...detailsFine, ...detailsOt, ...detailsWithdraw];
+        // Sort the merged array by date in descending order
+        const sortedDetails = merged.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setMergedDetails(sortedDetails);
+    }, [details, detailsFine, detailsOt, detailsWithdraw]);
+
 
     // slider
 
@@ -48,7 +141,7 @@ function Home() {
     useEffect(() => {
         axios.get('http://localhost:3001/getevents').then(res => {
 
-            console.log(res.data);
+
             setEvents(res.data)
 
         }).catch(err => console.log(err))
@@ -59,6 +152,7 @@ function Home() {
         axios.get('http://localhost:3001/').then(res => {
             if (res.data.status === 'success') {
                 setRole(res.data.role)
+
                 setSuc('success okk')
             } else {
                 alert('status failed')
@@ -124,6 +218,7 @@ function Home() {
             setShowButton(true);
         }
     }, [role]);
+
     return (
         <div>
             {/* Header */}
@@ -176,7 +271,7 @@ function Home() {
                         <div className="balance">
                             <div className="left">
                                 <span className="title">Total Balance is </span>
-                                <h1 className="total">1111</h1>
+                                <h1 className="total">{balance}</h1>
                             </div>
                         </div>
 
@@ -229,13 +324,13 @@ function Home() {
                         <div className="col-6">
                             <div className="stat-box">
                                 <div className="title">Income</div>
-                                <div className="value text-success">200</div>
+                                <div className="value text-success">{income}</div>
                             </div>
                         </div>
                         <div className="col-6">
                             <div className="stat-box">
                                 <div className="title">Fine</div>
-                                <div className="value text-danger">22</div>
+                                <div className="value text-danger">{fine}</div>
                             </div>
                         </div>
                     </div>
@@ -243,38 +338,87 @@ function Home() {
                         <div className="col-6">
                             <div className="stat-box">
                                 <div className="title">Withdraw</div>
-                                <div className="value">10</div>
+                                <div className="value">{withdraw}</div>
                             </div>
                         </div>
                         <div className="col-6">
                             <div className="stat-box">
                                 <div className="title">Balance</div>
-                                <div className="value">12</div>
+                                <div className="value">{balance}</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+
+
                 <div className="section mt-4">
                     <div className="section-heading">
                         <h2 className="title">Transactions</h2>
                         <Link to="/transactions" className="link">View All</Link>
                     </div>
-                    <div className="transactions">
-                        <a href="app-transaction-detail.html" className="item">
-                            <div className="detail">
-                                <img src="assets/img/sample/brand/1.jpg" alt="img" className="image-block imaged w48" />
-                                <div>
-                                    <strong>vga</strong>
-                                    <p>11-07-1999</p>
-                                    <p>Fine = 10</p>
+                    {Array.isArray(mergedDetails) && mergedDetails.length > 0 ? (
+                        mergedDetails.slice(0, 3).map((detail, index) => (
+
+                            <div className="section" key={index}>
+                                <div className="section-title">
+                                    Date: {`${new Date(detail.date).getDate()}-${new Date(detail.date).getMonth() + 1}-${new Date(detail.date).getFullYear()}`}
+                                </div>
+                                <div className="transactions">
+                                    <Link to="/" className="item">
+                                        <div className="detail">
+                                            {
+                                                detail.finefor ? (
+                                                    <img src="transaction/fine.jpg" alt="img" className="image-block imaged w48" />
+                                                ) : detail.otfor ? (
+                                                    <img src="transaction/ot.jpg" alt="img" className="image-block imaged w48" />
+                                                ) : detail.amount ? (
+                                                    <img src="transaction/withdraw.jpg" alt="img" className="image-block imaged w48" />
+                                                ) : (
+                                                    <img src="transaction/salary.jpg" alt="img" className="image-block imaged w48" />
+                                                )
+                                            }
+                                            ,
+                                            <div>
+                                                {detail.finefor ? (
+                                                    <strong>Fine for: {detail.finefor}</strong>
+                                                ) : detail.otfor ? (
+                                                    <strong>OT for: {detail.otfor}</strong>
+                                                ) : detail.amount ? (
+                                                    <strong>withdraw for: Personal</strong>
+                                                ) : (
+                                                    <strong>Salary of Event: {detail.event}</strong>
+                                                )},
+
+                                            </div>
+                                        </div>
+                                        <div className="right">
+                                            {detail.fine ? (
+                                                <div className="price text-danger">₹ {detail.fine}</div>
+                                            ) : detail.ot ? (
+                                                <div className="price text-success">₹ {detail.ot}</div>
+                                            ) : detail.amount ? (
+                                                <div className="price text-danger">₹ {detail.amount}</div>
+                                            ) : (
+                                                <div className="price text-success">₹ {detail.salary}</div>
+                                            )},
+
+                                        </div>
+                                    </Link>
                                 </div>
                             </div>
-                            <div className="right">
-                                <div className="price text-success"> +₹ 144</div>
-                            </div>
-                        </a>
-                    </div>
+                        ))
+                    ) : (
+                        <div className="section">
+                            <div className="section-title">No details available.</div>
+                        </div>
+                    )
+                    }
                 </div>
+
+
+
                 <div className="section full mt-4">
                     <div className="section-heading padding">
                         <h2 className="title">Works</h2>

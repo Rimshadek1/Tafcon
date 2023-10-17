@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -11,13 +12,18 @@ function Settings() {
         navigate(-1);
     };
     // goback
-    //darkmode
-    const [darkMode, setDarkMode] = useState(false);
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:3001/logout').then((res) => {
+                alert(res.data.message)
+                navigate('/login');
+            })
 
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
+        } catch (error) {
+            console.error(error);
+        }
     };
-    //darkmode
+
     return (
         <div>
             {/* header */}
@@ -75,8 +81,6 @@ function Settings() {
                                         className="form-check-input dark-mode-switch"
                                         type="checkbox"
                                         id="darkmodeSwitch"
-                                        checked={darkMode}
-                                        onChange={toggleDarkMode}
                                     />
                                     <label className="form-check-label" htmlFor="darkmodeSwitch"></label>
                                 </div>
@@ -171,9 +175,9 @@ function Settings() {
                         </div>
                     </li>
                     <li>
-                        <a href="/logout" className="item">
+                        <a href="/" className="item" onClick={handleLogout}>
                             <div className="in">
-                                <div>Log out all devices</div>
+                                <div>Log out</div>
                             </div>
                         </a>
                     </li>

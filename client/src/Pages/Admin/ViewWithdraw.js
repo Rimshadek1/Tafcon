@@ -1,47 +1,32 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './css/Viewevents.css'
-function Viewevents() {
-    const [events, setEvents] = useState([]);
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
+function ViewWithdraw() {
     const [deleteSuccess, setDeleteSuccess] = useState(false);
-    const [suc, setSuc] = useState();
-    const navigate = useNavigate()
-    axios.defaults.withCredentials = true;
+    const [user, setUser] = useState([]);
+    // const navigate = useNavigate()
     useEffect(() => {
-        // Make an HTTP GET request to your backend endpoint that retrieves events
-        axios.get('http://localhost:3001/viewevent')
+        axios.get('http://localhost:3001/withdraw')
             .then((res) => {
-                setEvents(res.data); // Set the events data received from the backend
+                console.log(res.data);
+                setUser(res.data);
             })
             .catch((error) => {
                 console.error(error);
             });
-    }, []);
-    useEffect(() => {
-        axios.get('http://localhost:3001/viewevents').then(res => {
-            console.log(res.data);
-            if (res.data.status === 'success') {
-                console.log('ok');
-                setSuc('success okk')
-            } else {
-                alert('status failed')
-                navigate('/')
-            }
-        }).catch(err => console.log(err))
-    }, []);
-
+    }, []); // The empty dependency array ensures this effect runs once on component mount
 
     const handleDelete = (id) => {
-        axios.delete(`http://localhost:3001/admin/delete-event/${id}`)
+        axios.delete(`http://localhost:3001/delete-withdraw/${id}`)
             .then((res) => {
                 // Check if the delete operation was successful
                 if (res.data.status === 'ok') {
                     setDeleteSuccess(true); // Set the success state to true
                     // Fetch the updated events after successful deletion
-                    axios.get('http://localhost:3001/viewevent')
+                    axios.get('http://localhost:3001/withdraw')
                         .then((res) => {
-                            setEvents(res.data);
+                            setUser(res.data);
                         })
                         .catch((error) => {
                             console.error(error);
@@ -56,10 +41,6 @@ function Viewevents() {
         }, 5000);
 
     };
-
-
-
-
     return (
         <div>
             <section>
@@ -81,9 +62,9 @@ function Viewevents() {
                             </a>
                         </div>
                         <div className="col">
-                            <Link to="/viewwithdraw" className="btn btn-warning ml-auto">
+                            <a href="/admin/view-salary" className="btn btn-warning ml-auto">
                                 View Salary
-                            </Link>
+                            </a>
                         </div>
                         <div className="col">
                             <Link to="/withdraw" className="btn btn-danger ml-auto">
@@ -100,40 +81,34 @@ function Viewevents() {
                         <thead>
                             <tr>
                                 <th scope="col">No</th>
-                                <th scope="col">Location</th>
-                                <th scope="col">Time</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Number</th>
+                                <th scope="col">Amount</th>
                                 <th scope="col">Date</th>
-                                <th scope="col">Event_name</th>
-                                <th scope="col">Slot_left</th>
-                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {events.map((event, index) => (
-                                <tr key={event._id}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{event.location}</td>
-                                    <td>{event.time}</td>
-                                    <td>{event.date}</td>
-                                    <td>{event.event}</td>
-                                    <td>
-                                        {event.slot === 0 ? "Slot is full" : event.slot}
-                                    </td>
-                                    <td>
-                                        <Link to={`/editevents/${event._id}`} className="btn btn-primary">
-                                            Edit
-                                        </Link>
-                                        &nbsp;&nbsp;
+                            {
+                                user.map((event, index) => (
+                                    <tr key={event._id}>
+                                        <th scope="row">{index + 1}</th>
+                                        <td>{event.name}</td>
+                                        <td>{event.number}</td>
+                                        <td>{event.amount}</td>
+                                        <td>{event.date}</td>
 
-                                        <button
-                                            className="btn btn-danger"
-                                            onClick={() => handleDelete(event._id)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                                        <td>
+
+                                            <button
+                                                className="btn btn-danger"
+                                                onClick={() => handleDelete(event._id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
 
                         </tbody>
                     </table>
@@ -144,8 +119,8 @@ function Viewevents() {
                     )}
                 </div>
             </section >
-        </div >
-    );
+        </div>
+    )
 }
 
-export default Viewevents;
+export default ViewWithdraw

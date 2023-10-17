@@ -117,9 +117,6 @@ module.exports = {
         });
     }
 
-
-
-
     ,
     getEventList: (userId) => {
         return new Promise(async (resolve, reject) => {
@@ -160,4 +157,241 @@ module.exports = {
         });
     }
     ,
+
+    getSalaryDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userSalaryDetails = await db
+                    .get()
+                    .collection(collection.salaryCollection)
+                    .find({ user: new ObjectId(userId) })
+                    .toArray();
+
+                resolve(userSalaryDetails);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+    getFineDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userFineDetails = await db
+                    .get()
+                    .collection(collection.fineCollection)
+                    .find({
+                        user: userId
+                    })
+                    .toArray();
+
+                resolve(userFineDetails);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+    ,
+    getOtDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userOtDetails = await db
+                    .get()
+                    .collection(collection.otCollection)
+                    .find({
+                        user: userId
+                    })
+                    .toArray();
+
+                resolve(userOtDetails);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+    ,
+    getWithdrawDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userWithdrawDetails = await db
+                    .get()
+                    .collection(collection.withdrawCollection)
+                    .find({
+                        userId: new ObjectId(userId)
+                    })
+                    .toArray();
+
+                resolve(userWithdrawDetails);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+    ,
+    getFine: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            const total = await db
+                .get()
+                .collection(collection.fineCollection)
+                .aggregate([
+                    {
+                        $match: { user: userId }
+                    },
+                    {
+                        $addFields: {
+                            fine: { $toInt: '$fine' },
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            totalFine: { $sum: "$fine" }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            totalFine: 1,
+                        }
+                    }
+                ])
+                .toArray();
+
+            console.log('Intermediate Result:', total);
+
+            if (total.length > 0) {
+                console.log('Final Result:', total[0]);
+                resolve(total[0]);
+            } else {
+                console.log('No Results Found');
+                resolve({ totalFine: 0 });
+            }
+
+        });
+    },
+
+    getIncome: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            const salaryCollection = db.get().collection(collection.salaryCollection);
+            const otCollection = db.get().collection(collection.otCollection);
+
+            // Define two aggregation pipelines for salary and OT
+            const salaryPipeline = [
+                {
+                    $match: { user: new ObjectId(userId) }
+                },
+                {
+                    $addFields: {
+                        salary: { $toInt: '$salary' },
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalSalary: { $sum: "$salary" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        totalSalary: 1,
+                    }
+                }
+            ];
+
+            const otPipeline = [
+                {
+                    $match: {
+                        user: userId
+                    }
+                },
+                {
+                    $addFields: {
+                        ot: { $toInt: '$ot' },
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalOT: { $sum: "$ot" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        totalOT: 1,
+                    }
+                }
+            ];
+
+            // Execute both pipelines in parallel
+            const [salaryResult, otResult] = await Promise.all([
+                salaryCollection.aggregate(salaryPipeline).toArray(),
+                otCollection.aggregate(otPipeline).toArray(),
+            ]);
+
+            console.log('Salary Intermediate Result:', salaryResult);
+            console.log('OT Intermediate Result:', otResult);
+
+            // Calculate the total income by adding salary and OT
+            const totalIncome = {
+                totalSalary: salaryResult.length > 0 ? salaryResult[0].totalSalary : 0,
+                totalOT: otResult.length > 0 ? otResult[0].totalOT : 0,
+                total: (salaryResult.length > 0 ? salaryResult[0].totalSalary : 0) + (otResult.length > 0 ? otResult[0].totalOT : 0),
+            };
+
+            console.log('Total Income:', totalIncome);
+
+            resolve(totalIncome);
+        });
+    }
+    , getWithdraw: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            const total = await db
+                .get()
+                .collection(collection.withdrawCollection)
+                .aggregate([
+                    {
+                        $match: { userId: new ObjectId(userId) }
+                    },
+                    {
+                        $addFields: {
+                            amount: { $toInt: '$amount' },
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            totalWithdraw: { $sum: "$amount" }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            totalWithdraw: 1,
+                        }
+                    }
+                ])
+                .toArray();
+
+            console.log('Intermediate Result:', total);
+
+            if (total.length > 0) {
+                console.log('Final Result:', total[0]);
+                resolve(total[0]);
+            } else {
+                console.log('No Results Found');
+                resolve({ totalWithdraw: 0 });
+            }
+
+        });
+    },
+
+
+
+
+
+
+
+
+
 }

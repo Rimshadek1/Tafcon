@@ -150,7 +150,7 @@ function Transactions() {
                                             ) : detail.amount ? (
                                                 <strong>withdraw for: Personal</strong>
                                             ) : (
-                                                <strong>Salary of Event: {detail.event}</strong>
+                                                <strong>Salary of Event: {detail.events}</strong>
                                             )},
 
                                         </div>

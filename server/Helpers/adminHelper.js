@@ -279,7 +279,7 @@ module.exports = {
                         event: events,
                         role: user.role,
                         salary: salary,
-                        event: eventdetails.event,
+                        events: eventdetails.event,
                         location: eventdetails.location,
                         date: currentDate,
                     };

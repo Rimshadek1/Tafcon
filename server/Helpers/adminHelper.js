@@ -6,6 +6,8 @@ module.exports = {
     addEvent: (event) => {
         return new Promise((resolve, reject) => {
             event.slot = parseInt(event.slot)
+            const currentDateTime = new Date().toISOString();
+            event.currentDateTime = currentDateTime;
             db.get().collection(collection.eventCollection).insertOne(event).then((data) => {
                 console.log(data);
                 resolve(data.insertedId);
@@ -101,6 +103,16 @@ module.exports = {
                 res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
             });
     },
+    getEmpveriInfo: (req, res) => {
+        db.get().collection(collection.verifyCollection).find().toArray()
+            .then((users) => {
+                res.json(users); // Send events data as JSON response
+            })
+            .catch((error) => {
+                console.error(error);
+                res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
+            });
+    },
     getUserDetails: (proId) => {
         return new Promise((resolve, reject) => {
             try {
@@ -131,14 +143,12 @@ module.exports = {
                 const bookingDetails = await db.get().collection(collection.bookCollection).find({
                     'events.item': new ObjectId(proId)
                 }).toArray();
-
                 if (bookingDetails && bookingDetails.length > 0) {
                     const userIds = bookingDetails.map((booking) => booking.user);
 
                     const users = await db.get().collection(collection.userCollection).find({
                         _id: { $in: userIds.map((userId) => new ObjectId(userId)) }
                     }).toArray();
-
                     resolve(users);
                 } else {
                     reject("No booking details found for the provided proId");
@@ -148,11 +158,51 @@ module.exports = {
             }
         });
     },
+    isFine: (proId) => {
+        return new Promise(async (resolve, reject) => {
+            const bookingDetails = await db.get().collection(collection.bookCollection).find({
+                'events.item': new ObjectId(proId)
+            }).toArray();
+            if (bookingDetails && bookingDetails.length > 0) {
+                const userIds = bookingDetails.map((booking) => booking.user);
+
+                const users = await db.get().collection(collection.userCollection).find({
+                    _id: { $in: userIds.map((userId) => new ObjectId(userId)) }
+                }).toArray();
+                const userIdss = users.map(user => user._id);
+                console.log(userIdss);
+                const usersWithFines = await db.get().collection(collection.fineCollection).find({
+                    user: { $in: userIdss },
+                    eventId: new ObjectId(proId)
+                }).toArray();
+                const Onsite = await db.get().collection(collection.salaryCollection).find({
+                    user: { $in: userIdss },
+                    event: new ObjectId(proId)
+                }).toArray();
+                const OtGiven = await db.get().collection(collection.otCollection).find({
+                    user: { $in: userIdss },
+                    eventId: new ObjectId(proId)
+                }).toArray();
+                const TeGiven = await db.get().collection(collection.teCollection).find({
+                    user: { $in: userIdss },
+                    eventId: new ObjectId(proId)
+                }).toArray();
+
+                resolve({ usersWithFines, Onsite, OtGiven, TeGiven });
+            } else {
+                resolve({
+                    usersWithFines: [], Onsite: [], OtGiven: [], TeGiven: []
+                });
+            }
+        });
+    }
+
+    ,
     addFine: (userId, userDetails) => {
         return new Promise(async (resolve, reject) => {
             try {
                 // Check if any of the required fields are null
-                if (!userDetails.eventId || !userDetails.fineFor || !userDetails.fine) {
+                if (!new ObjectId(userDetails.eventId) || !userDetails.fineFor || !userDetails.fine) {
                     reject("Incomplete data provided");
                     return;
                 }
@@ -161,7 +211,7 @@ module.exports = {
 
                 const existingFine = await db.get().collection(collection.fineCollection).findOne({
                     user: userId,
-                    eventId: userDetails.eventId
+                    eventId: new ObjectId(userDetails.eventId)
                 });
 
                 if (existingFine) {
@@ -170,8 +220,8 @@ module.exports = {
                     const eventdetails = await db.get().collection(collection.eventCollection).findOne({ _id: new ObjectId(userDetails.eventId) })
 
                     const fine = {
-                        user: userId,
-                        eventId: userDetails.eventId,
+                        user: new ObjectId(userId),
+                        eventId: new ObjectId(userDetails.eventId),
                         finefor: userDetails.fineFor,
                         fine: - parseInt(userDetails.fine, 10),
                         event: eventdetails.event,
@@ -187,6 +237,88 @@ module.exports = {
             }
         });
     },
+    viewFine: (userId, userDetails) => {
+
+        return new Promise((resolve, reject) => {
+            console.log(userDetails);
+            db.get().collection(collection.fineCollection).findOne({
+                user: new ObjectId(userId),
+                eventId: new ObjectId(userDetails.eventId)
+            }).then((data) => {
+                resolve(data)
+            })
+        })
+    }, updateFine: (userId, eventId, fineDetails) => {
+        return new Promise((resolve, reject) => {
+            const fine = fineDetails.values.fine;
+
+            // Ensure that the fine value is negative
+            const updatedFine = -Math.abs(parseInt(fine, 10));
+
+            db.get().collection(collection.fineCollection).updateOne({
+                user: new ObjectId(userId),
+                eventId: new ObjectId(eventId)
+            }, {
+                $set: {
+                    fine: updatedFine,
+                    finefor: fineDetails.values.finefor
+                }
+            }).then((response) => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    ,
+    addTe: (userId, eventId, userDetails) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                // Check if any of the required fields are null
+                if (!eventId || !userDetails.teFor || !userDetails.te) {
+                    reject("Incomplete data provided");
+                    return;
+                }
+                const currentDate = new Date();
+                const existingTe = await db.get().collection(collection.teCollection).findOne({
+                    user: new ObjectId(userId),
+                    event: new ObjectId(eventId)
+                });
+                if (existingTe) {
+                    reject("Ot is already marked for this user and event");
+                } else {
+                    const eventdetails = await db.get().collection(collection.eventCollection).findOne({ _id: new ObjectId(eventId) })
+
+                    const te = {
+                        user: new ObjectId(userId),
+                        eventId: new ObjectId(eventId),
+                        tefor: userDetails.teFor,
+                        te: parseInt(userDetails.te, 10),
+                        event: eventdetails.event,
+                        location: eventdetails.location,
+                        date: currentDate
+                    };
+                    const user = await db.get().collection(collection.userCollection).findOne({ _id: new ObjectId(userId) })
+                    const teWithdraw = {
+                        userId: new ObjectId(userId),
+                        name: 'Travel Exp',
+                        number: user.number,
+                        amount: -parseInt(userDetails.te, 10),
+                        date: currentDate
+                    }
+                    const result1 = await db.get().collection(collection.withdrawCollection).insertOne(teWithdraw);
+                    const result = await db.get().collection(collection.teCollection).insertOne(te);
+                    resolve("Ot added successfully");
+                }
+
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    ,
     addOt: (userId, userDetails) => {
         return new Promise(async (resolve, reject) => {
             try {
@@ -197,8 +329,8 @@ module.exports = {
                 }
                 const currentDate = new Date();
                 const existingOt = await db.get().collection(collection.otCollection).findOne({
-                    user: userId,
-                    event: userDetails.eventId
+                    user: new ObjectId(userId),
+                    event: new ObjectId(userDetails.eventId)
                 });
                 if (existingOt) {
                     reject("Ot is already marked for this user and event");
@@ -206,8 +338,8 @@ module.exports = {
                     const eventdetails = await db.get().collection(collection.eventCollection).findOne({ _id: new ObjectId(userDetails.eventId) })
 
                     const ot = {
-                        user: userId,
-                        eventId: userDetails.eventId,
+                        user: new ObjectId(userId),
+                        eventId: new ObjectId(userDetails.eventId),
                         otfor: userDetails.otFor,
                         ot: parseInt(userDetails.ot, 10),
                         event: eventdetails.event,
@@ -263,7 +395,7 @@ module.exports = {
                     .get()
                     .collection(collection.salaryCollection)
                     .findOne({
-                        user: user._id, event: events
+                        user: user._id, event: new ObjectId(events)
                     });
 
                 if (existingSalary) {
@@ -276,7 +408,7 @@ module.exports = {
                     console.log('eventdetails');
                     const salaryRecord = {
                         user: user._id,
-                        event: events,
+                        event: new ObjectId(events),
                         role: user.role,
                         salary: salary,
                         events: eventdetails.event,

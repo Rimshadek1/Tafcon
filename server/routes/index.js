@@ -4,9 +4,10 @@ var router = express.Router();
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const adminHelper = require('../Helpers/adminHelper');
-const multer = require('multer')
 const path = require('path');
-const { log } = require('console');
+require('dotenv').config();
+const jwtsecret = process.env.JWTSECRET
+
 
 //middlewire
 const verifyUser = (req, res, next) => {
@@ -14,7 +15,7 @@ const verifyUser = (req, res, next) => {
     if (!token) {
         return res.json({ error: 'Token is missing' });
     } else {
-        jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+        jwt.verify(token, jwtsecret, (err, decoded) => {
             if (err) {
                 return res.json({ error: 'Error with token' });
             } else {
@@ -41,7 +42,7 @@ const verifyAdmin = (req, res, next) => {
     if (!token) {
         return res.json({ error: 'Token is missing' });
     } else {
-        jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+        jwt.verify(token, jwtsecret, (err, decoded) => {
             if (err) {
                 return res.json({ error: 'Error with token' });
             } else {
@@ -60,7 +61,7 @@ const verifyService = (req, res, next) => {
     if (!token) {
         return res.json({ error: 'Token is missing' });
     } else {
-        jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+        jwt.verify(token, jwtsecret, (err, decoded) => {
             if (err) {
                 return res.json({ error: 'Error with token' });
             } else {
@@ -79,7 +80,6 @@ const verifyService = (req, res, next) => {
 
 //routers users
 
-
 router.post('/register', async (req, res) => {
     try {
         const id = await userHelper.register(req.body)
@@ -94,6 +94,19 @@ router.post('/register', async (req, res) => {
             fs.mkdirSync(destinationDir, { recursive: true });
         }
         await image.mv(destinationDir + imageName);
+        //proof
+
+        let imageProof = req.files.proof;
+        let imageNameProof = id + '.jpg';
+        if (image.mimetype === 'image/png') {
+            imageNameProof = id + '.png';
+        }
+        console.log(id);
+        const destinationDirProof = './public/Proof/';
+        if (!fs.existsSync(destinationDirProof)) {
+            fs.mkdirSync(destinationDirProof, { recursive: true });
+        }
+        await imageProof.mv(destinationDirProof + imageNameProof);
 
         res.json('success');
 
@@ -104,6 +117,7 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ error: 'An error occurred' });
     }
 });
+
 router.post('/login', (req, res) => {
     userHelper.doLogin(req.body)
         .then((response) => {
@@ -113,7 +127,7 @@ router.post('/login', (req, res) => {
                     role: response.user.role,
                     name: response.user.name,
                     id: response.user._id
-                }, 'auibaekjbwea65136awibiba', { expiresIn: '1d' });
+                }, jwtsecret, { expiresIn: '1d' });
                 res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' }, {
                     id: response.user._id,
                     number: response.user.number,
@@ -133,7 +147,7 @@ router.post('/login', (req, res) => {
 router.get('/profile', (req, res) => {
     const token = req.cookies?.token;
     if (token) {
-        jwt.verify(token, 'auibaekjbwea65136awibiba', {}, (err, userData) => {
+        jwt.verify(token, jwtsecret, {}, (err, userData) => {
             if (err) throw err;
             res.json({
                 userData
@@ -145,7 +159,7 @@ router.get('/profile', (req, res) => {
 })
 router.get('/', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+    jwt.verify(token, jwtsecret, (err, decoded) => {
 
         res.json({ status: 'success', id: decoded.id, role: decoded.role });
     })
@@ -157,7 +171,7 @@ router.post('/logout', (req, res) => {
 
 router.get('/profile-image', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+    jwt.verify(token, jwtsecret, (err, decoded) => {
         if (err) {
             // Handle the error, e.g., return an error response
             return res.status(500).json({ status: 'error', message: 'Token verification failed' });
@@ -190,7 +204,7 @@ router.get('/getevents', verifyUser, adminHelper.getAllEventsUser)
 router.post('/confirmbooking/:proId', verifyUser, (req, res) => {
     const proId = req.params.proId;
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+    jwt.verify(token, jwtsecret, (err, decoded) => {
         const UserId = decoded.id;
         userHelper.Booking(proId, UserId).then((response) => {
             if (response === 'success') {
@@ -204,18 +218,18 @@ router.post('/confirmbooking/:proId', verifyUser, (req, res) => {
 
 router.get('/bookedevents', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', (err, decoded) => {
+    jwt.verify(token, jwtsecret, (err, decoded) => {
         const UserId = decoded.id;
-        console.log(UserId);
+
         userHelper.getEventList(UserId).then((response) => {
 
             res.json({ status: 'success', response });
         });
     })
 })
-router.get('/viewSalary', (req, res) => {
+router.get('/viewSalary', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', async (err, decoded) => {
+    jwt.verify(token, jwtsecret, async (err, decoded) => {
         const UserId = decoded.id;
         try {
             const details = await userHelper.getSalaryDetails(UserId);
@@ -226,9 +240,9 @@ router.get('/viewSalary', (req, res) => {
         }
     });
 });
-router.get('/viewFine', (req, res) => {
+router.get('/viewFine', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', async (err, decoded) => {
+    jwt.verify(token, jwtsecret, async (err, decoded) => {
         const UserId = decoded.id;
         try {
             const details = await userHelper.getFineDetails(UserId);
@@ -239,9 +253,9 @@ router.get('/viewFine', (req, res) => {
         }
     });
 });
-router.get('/ot', (req, res) => {
+router.get('/ot', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', async (err, decoded) => {
+    jwt.verify(token, jwtsecret, async (err, decoded) => {
         const UserId = decoded.id;
         try {
             const details = await userHelper.getOtDetails(UserId);
@@ -252,9 +266,22 @@ router.get('/ot', (req, res) => {
         }
     });
 });
-router.get('/withdrawf', (req, res) => {
+router.get('/te', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', async (err, decoded) => {
+    jwt.verify(token, jwtsecret, async (err, decoded) => {
+        const UserId = decoded.id;
+        try {
+            const details = await userHelper.getTeDetails(UserId);
+            res.json({ status: 'success', details });
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({ status: 'error', message: 'Failed to retrieve salary details' });
+        }
+    });
+});
+router.get('/withdrawf', verifyUser, (req, res) => {
+    const token = req.cookies.token;
+    jwt.verify(token, jwtsecret, async (err, decoded) => {
         const UserId = decoded.id;
         try {
             const details = await userHelper.getWithdrawDetails(UserId);
@@ -265,9 +292,9 @@ router.get('/withdrawf', (req, res) => {
         }
     });
 })
-router.get('/amount', (req, res) => {
+router.get('/amount', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    jwt.verify(token, 'auibaekjbwea65136awibiba', async (err, decoded) => {
+    jwt.verify(token, jwtsecret, async (err, decoded) => {
         const UserId = decoded.id;
         try {
             const fine = await userHelper.getFine(UserId);
@@ -278,6 +305,19 @@ router.get('/amount', (req, res) => {
         } catch (error) {
             console.error("Error:", error);
             res.status(500).json({ status: 'error', message: 'Failed to retrieve salary details' });
+        }
+    });
+})
+router.get('/total', verifyUser, (req, res) => {
+    const token = req.cookies.token;
+    jwt.verify(token, jwtsecret, async (err, decoded) => {
+        const role = decoded.role;
+        const userId = decoded.id;
+        try {
+            res.json({ role });
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({ status: 'error', message: 'Failed to retrieve role details' });
         }
     });
 })
@@ -309,19 +349,13 @@ router.get('/editbutton/:eventId', verifyAdmin, async (req, res) => {
     }
 })
 router.post('/editbutton/:eventId', verifyAdmin, (req, res) => {
-    console.log(req.params.eventId);
-    console.log(req.body);
-
     adminHelper.updateEvent(req.params.eventId, req.body).then((response) => {
-
-
         res.json({ status: 'updated' })
-
     })
 })
 router.post('/addevent', verifyAdmin, async (req, res) => {
     try {
-        console.log(req.body);
+
         const response = await adminHelper.addEvent(req.body);
         res.json({ status: 'ok' });
     } catch (error) {
@@ -330,16 +364,15 @@ router.post('/addevent', verifyAdmin, async (req, res) => {
     }
 });
 router.get('/viewuser', verifyAdmin, adminHelper.getEmpInfo)
-router.get('/edituser/:userId', async (req, res) => {
-    console.log(req.params.userId);
+router.get('/edituser/:userId', verifyAdmin, async (req, res) => {
+
     let user = await adminHelper.getUserDetails(req.params.userId)
     if (user) {
         res.json({ user, status: 'ok' })
     }
 });
 router.post('/edituser/:userId', verifyAdmin, (req, res) => {
-    console.log(req.params.userId);
-    console.log(req.body);
+
     adminHelper.updateUser(req.params.userId, req.body).then((response) => {
         res.json({ status: 'updated' })
 
@@ -347,7 +380,6 @@ router.post('/edituser/:userId', verifyAdmin, (req, res) => {
 })
 router.get('/confirmedpdf/:proId', verifyService, (req, res) => {
     const proId = req.params.proId;
-
     adminHelper.confirmedPdf(proId)
         .then((userData) => {
             res.json({ users: userData });
@@ -357,10 +389,49 @@ router.get('/confirmedpdf/:proId', verifyService, (req, res) => {
             res.status(500).json({ error: 'Internal server error' });
         });
 });
+router.get('/isfine/:proId', verifyService, (req, res) => {
+    const proId = req.params.proId;
+    adminHelper.isFine(proId).then((response) => {
+
+        res.json({
+            usersWithFine: response.usersWithFines,
+            Onsite: response.Onsite,
+            OtGiven: response.OtGiven,
+            TeGiven: response.TeGiven
+        });
+    });
+});
+
 router.post('/fine/:userId', verifyService, async (req, res) => {
     try {
         const userId = req.params.userId;
         const result = await adminHelper.addFine(userId, req.body);
+        res.json({ status: 'ok', message: result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while adding the fine', message: error });
+    }
+});
+router.get('/viewfine/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+    let fine = await adminHelper.viewFine(userId, eventId)
+
+    res.json({ fine })
+})
+router.post('/viewfine/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+
+    let fine = await adminHelper.updateFine(userId, eventId, req.body)
+
+    res.json({ fine })
+})
+router.post('/te/:userId', verifyService, async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const eventId = req.query.eventId;
+        const result = await adminHelper.addTe(userId, eventId, req.body);
         res.json({ status: 'ok', message: result });
     } catch (error) {
         console.error(error);
@@ -387,7 +458,7 @@ router.post('/salary/:userId', verifyService, async (req, res) => {
         res.status(400).json({ status: 'error', message: error });
     }
 });
-router.post('/withdraw', (req, res) => {
+router.post('/withdraw', verifyAdmin, (req, res) => {
     adminHelper.withDraw(req.body).then((response) => {
         if (response) {
 
@@ -395,11 +466,19 @@ router.post('/withdraw', (req, res) => {
         }
     })
 })
-router.get('/withdraw', adminHelper.viewWithraw)
-router.delete('/delete-withdraw/:id', (req, res) => {
+router.get('/withdraw', verifyAdmin, adminHelper.viewWithraw)
+router.delete('/delete-withdraw/:id', verifyAdmin, (req, res) => {
     const withId = req.params.id;
     adminHelper.deleteWithdraw(withId).then((response) => {
         res.json({ status: 'ok' });
     })
 })
+router.post('/verify/:id', verifyAdmin, (req, res) => {
+    userId = req.params.id;
+
+    userHelper.doVerify(userId)
+    res.json('success');
+})
+router.get('/viewverifyuser', verifyAdmin, adminHelper.getEmpveriInfo)
+
 module.exports = router;

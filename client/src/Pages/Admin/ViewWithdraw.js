@@ -57,14 +57,14 @@ function ViewWithdraw() {
                             </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/add-salary" className="btn btn-success ml-auto">
-                                Add Salary
-                            </a>
+                            <Link to="/viewevents" className="btn btn-success ml-auto">
+                                View event
+                            </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/view-salary" className="btn btn-warning ml-auto">
-                                View Salary
-                            </a>
+                            <Link to="/verifyemp" className="btn btn-warning ml-auto">
+                                Verify emp
+                            </Link>
                         </div>
                         <div className="col">
                             <Link to="/withdraw" className="btn btn-danger ml-auto">
@@ -119,7 +119,7 @@ function ViewWithdraw() {
                     )}
                 </div>
             </section >
-        </div>
+        </div >
     )
 }
 

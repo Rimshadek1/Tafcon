@@ -5,6 +5,9 @@ import './css/Empinfo.css'
 function Empinfo() {
     const [user, setUser] = useState([]);
     const [zoomed, setZoomed] = useState(null);
+    const [zoomeded, setZoomeded] = useState(null);
+    user.sort((a, b) => new Date(b.verifydate) - new Date(a.verifydate));
+
     useEffect(() => {
 
         axios.get('http://localhost:3001/viewuser').then((res) => {
@@ -21,6 +24,16 @@ function Empinfo() {
             setZoomed(userId); // Zoom in
         }
     };
+    // Function to handle image click
+    const handleProofClick = (userId) => {
+        // Toggle zoomed state for the clicked image
+        if (zoomeded === userId) {
+            setZoomeded(null); // Zoom out
+        } else {
+            setZoomeded(userId); // Zoom in
+        }
+    };
+
 
     return (
         <div>
@@ -33,24 +46,29 @@ function Empinfo() {
                             </Link>
                         </div>
                         <div className="col">
-                            <Link to="/empinfo" className="btn btn-info ml-auto">
-                                View Employees
+                            <Link to="/verifyemp" className="btn btn-info ml-auto">
+                                Verify Employees
                             </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/add-salary" className="btn btn-success ml-auto">
-                                Add Salary
-                            </a>
+                            <Link to="/viewwithdraw" className="btn btn-warning ml-auto">
+                                View withdraw
+                            </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/view-salary" className="btn btn-warning ml-auto">
-                                View Salary
-                            </a>
+                            <Link to="/withdraw" className="btn btn-danger ml-auto">
+                                Withdraw
+                            </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/withdraw" className="btn btn-danger ml-auto">
-                                Withdraw Salary
-                            </a>
+                            <Link to="/sitedetails" className="btn btn-success ml-auto">
+                                Site
+                            </Link>
+                        </div>
+                        <div className="col">
+                            <Link to="/viewevents" className="btn btn-primary ml-auto">
+                                View Events
+                            </Link>
                         </div>
                     </div>
                     <table className="table mt-5">
@@ -59,9 +77,16 @@ function Empinfo() {
                                 <th scope="col">No</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Place</th>
+                                <th scope="col">Address</th>
+                                <th scope="col">Age</th>
+                                <th scope="col">Height</th>
                                 <th scope="col">Number</th>
+                                <th scope="col">Xp in Event</th>
+                                <th scope="col">Xp in Islamic</th>
+                                <th scope="col">Current status</th>
                                 <th scope="col">Role</th>
                                 <th scope="col">Profile</th>
+                                <th scope="col">Proof</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,7 +95,13 @@ function Empinfo() {
                                     <th scope="row">{index + 1}</th>
                                     <td>{users.name}</td>
                                     <td>{users.place}</td>
+                                    <td>{users.adress}</td>
+                                    <td>{users.age}</td>
+                                    <td>{users.height}</td>
                                     <td>{users.number}</td>
+                                    <td>{users.xp}</td>
+                                    <td>{users.xpi}</td>
+                                    <td>{users.currentStatus}</td>
                                     <td>{users.role}</td>
                                     <td>
                                         <img
@@ -82,6 +113,18 @@ function Empinfo() {
                                             }}
                                             onClick={() => handleImageClick(users._id)} // Handle image click
                                             alt={`${users.name}'s Profile`}
+                                        />
+                                    </td>
+                                    <td>
+                                        <img
+                                            className={`imaged w32 pointer-cursor ${zoomeded === users._id ? 'zoom-image zoomed' : ''}`}
+                                            src={`http://127.0.0.1:3001/Proof/${users._id}.png`} // PNG image URL
+                                            onError={(e) => {
+                                                e.target.onerror = null; // Prevent infinite loop
+                                                e.target.src = `http://127.0.0.1:3001/Proof/${users._id}.jpg`; // Try JPG if PNG fails
+                                            }}
+                                            onClick={() => handleProofClick(users._id)} // Handle image click
+                                            alt={`${users.name}'s Proof`}
                                         />
                                     </td>
                                     <td>
@@ -97,7 +140,7 @@ function Empinfo() {
 
                 </div>
             </section >
-        </div>
+        </div >
     )
 }
 

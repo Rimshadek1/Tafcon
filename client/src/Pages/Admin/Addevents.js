@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 function Addevents() {
     const [location, setLocation] = useState()
     const [time, setTime] = useState()
     const [date, setDate] = useState()
     const [event, setEvent] = useState()
+    const [type, setType] = useState()
     const [slot, setSlot] = useState()
-
+    const navigate = useNavigate();
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -14,6 +16,7 @@ function Addevents() {
         formData.append('time', time);
         formData.append('date', date);
         formData.append('event', event);
+        formData.append('type', type);
         formData.append('slot', slot);
 
         axios.post('http://localhost:3001/addevent', formData)
@@ -21,16 +24,17 @@ function Addevents() {
                 // Check the response for success
                 if (res.data.status === 'ok') {
                     // Redirect to the home page or perform any other action on success
-                    window.location.href = '/viewevents';
+                    navigate('/viewevents');
                 } else {
                     // Handle any specific error messages from the server and show an alert
                     alert('Failed to add event. Please check your data and try again.');
+                    navigate(-1)
                 }
             })
             .catch((error) => {
                 // Handle network errors or unexpected errors
                 console.error(error);
-                alert('An error occurred while adding the event.');
+
             });
     };
 
@@ -88,6 +92,18 @@ function Addevents() {
                                 id="event"
                                 onChange={(e) => setEvent(e.target.value)}
                             />
+                        </div>
+                        <div className="form-group mt-2">
+                            <label htmlFor="event">Event Type</label>
+                            <select
+                                className="form-control"
+                                name="type"
+                                id="type"
+                                onChange={(e) => setType(e.target.value)}
+                            >
+                                <option value="Normal">Normal</option>
+                                <option value="Islamic">Islamic</option>
+                            </select>
                         </div>
 
                         <div className="form-group mt-2">

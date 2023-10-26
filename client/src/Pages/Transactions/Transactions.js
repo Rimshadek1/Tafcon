@@ -9,6 +9,7 @@ function Transactions() {
     const [detailsFine, setDetailsFine] = useState([]);
     const [detailsOt, setDetailsOt] = useState([]);
     const [detailsWithdraw, setDetailsWithdraw] = useState([]);
+    const [detailsTe, setDetailsTe] = useState([]);
     const [mergedDetails, setMergedDetails] = useState([]);
     useEffect(() => {
         // Fetch salary details
@@ -16,13 +17,10 @@ function Transactions() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetails(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching salary data:', error);
-                alert('Failed to fetch data from the server');
             });
 
         // Fetch fine details
@@ -30,13 +28,10 @@ function Transactions() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsFine(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching fine data:', error);
-                alert('Failed to fetch data from the server');
             });
 
         // Fetch overtime details
@@ -44,40 +39,45 @@ function Transactions() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsOt(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching OT data:', error);
-                alert('Failed to fetch data from the server');
             });
-    }, []);
-    // Fetch withdraw details
-    useEffect(() => {
         // Fetch withdraw details
         axios.get('http://localhost:3001/withdrawf')
             .then((res) => {
                 if (res.data.status === 'success') {
                     console.log(res.data.details);
                     setDetailsWithdraw(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching withdraw data:', error);
-                alert('Failed to fetch data from the server');
+            });
+        // fetch Te details
+        axios.get('http://localhost:3001/te')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    console.log(res.data.details);
+                    setDetailsTe(res.data.details);
+                } else {
+                    alert('not fetch Te');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching withdraw data:', error);
             });
     }, []);
 
+
     // Merge salary, fine, OT, and withdraw details
     useEffect(() => {
-        const merged = [...details, ...detailsFine, ...detailsOt, ...detailsWithdraw];
+        const merged = [...details, ...detailsFine, ...detailsOt, ...detailsWithdraw, ...detailsTe];
         // Sort the merged array by date in descending order
         const sortedDetails = merged.sort((a, b) => new Date(b.date) - new Date(a.date));
         setMergedDetails(sortedDetails);
-    }, [details, detailsFine, detailsOt, detailsWithdraw]);
+    }, [details, detailsFine, detailsOt, detailsWithdraw, detailsTe]);
 
     const handleGoBack = (e) => {
         e.preventDefault();
@@ -135,6 +135,8 @@ function Transactions() {
                                                 <img src="transaction/fine.jpg" alt="img" className="image-block imaged w48" />
                                             ) : detail.otfor ? (
                                                 <img src="transaction/ot.jpg" alt="img" className="image-block imaged w48" />
+                                            ) : detail.tefor ? (
+                                                <img src="transaction/te.jpg" alt="img" className="image-block imaged w48" />
                                             ) : detail.amount ? (
                                                 <img src="transaction/withdraw.jpg" alt="img" className="image-block imaged w48" />
                                             ) : (
@@ -147,6 +149,8 @@ function Transactions() {
                                                 <strong>Fine for: {detail.finefor}</strong>
                                             ) : detail.otfor ? (
                                                 <strong>OT for: {detail.otfor}</strong>
+                                            ) : detail.tefor ? (
+                                                <strong>Te for: {detail.tefor}</strong>
                                             ) : detail.amount ? (
                                                 <strong>withdraw for: Personal</strong>
                                             ) : (
@@ -160,6 +164,8 @@ function Transactions() {
                                             <div className="price text-danger">-₹ {Math.abs(detail.fine)}</div>
                                         ) : detail.ot ? (
                                             <div className="price text-success">₹ {detail.ot}</div>
+                                        ) : detail.te ? (
+                                            <div className="price text-success">₹ {detail.te}</div>
                                         ) : detail.amount ? (
                                             <div className="price text-danger">₹ {detail.amount}</div>
                                         ) : (

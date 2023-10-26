@@ -10,7 +10,7 @@ function Withdraw() {
         axios.post('http://localhost:3001/withdraw', { number, amount }).then((res) => {
             if (res.data.status === 'success') {
                 alert('withdraw success');
-                navigate('/viewevents')
+                navigate(-1)
             }
         })
     }

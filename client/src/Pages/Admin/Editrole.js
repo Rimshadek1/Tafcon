@@ -16,7 +16,7 @@ function Editrole() {
         axios.post(`http://localhost:3001/edituser/${id}`, values)
             .then((res) => {
                 if (res.data.status === 'updated') {
-                    navigate('/empinfo')
+                    navigate(-1)
                 } else {
                     alert('not updated')
                 }

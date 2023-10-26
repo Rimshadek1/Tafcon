@@ -1,17 +1,28 @@
 import axios from 'axios';
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 function Settings() {
     // goback
     const navigate = useNavigate();
-
     const handleGoBack = (e) => {
         e.preventDefault();
         navigate(-1);
     };
-    // goback
+    const [imageUrl, setImageUrl] = useState('');
+    useEffect(() => {
+        // Make an HTTP GET request to fetch the image URL
+        axios.get('http://localhost:3001/profile-image')
+            .then((res) => {
+                // Check if imageUrl is not empty before setting it
+                if (res.data.imageUrl) {
+                    setImageUrl(res.data.imageUrl);
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:3001/logout').then((res) => {
@@ -21,6 +32,7 @@ function Settings() {
 
         } catch (error) {
             console.error(error);
+            navigate('/login');
         }
     };
 
@@ -58,64 +70,14 @@ function Settings() {
                     <div className="avatar-section">
                         <a href="/">
                             <img
-                                src="/Profile-pictures"
-
-                                alt="avatar"
-                                className="imaged w100 rounded"
+                                className='imaged w100 rounded pointer-cursor'
+                                src={'http://127.0.0.1:3001/Profile-pictures/' + imageUrl}
+                                alt='profile'
                             />
-                            <span className="button">
-                                <ion-icon name="camera-outline"></ion-icon>
-                            </span>
                         </a>
                     </div>
                 </div>
 
-                <div className="listview-title mt-1">Theme</div>
-                <ul className="listview image-listview text inset no-line">
-                    <li>
-                        <div className="item">
-                            <div className="in">
-                                <div>Dark Mode</div>
-                                <div className="form-check form-switch ms-2">
-                                    <input
-                                        className="form-check-input dark-mode-switch"
-                                        type="checkbox"
-                                        id="darkmodeSwitch"
-                                    />
-                                    <label className="form-check-label" htmlFor="darkmodeSwitch"></label>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-
-                <div className="listview-title mt-1">Notifications</div>
-                <ul className="listview image-listview text inset">
-                    <li>
-                        <div className="item">
-                            <div className="in">
-                                <div>
-                                    Payment Alert
-                                    <div className="text-muted">
-                                        Send notification when new payment received
-                                    </div>
-                                </div>
-                                <div className="form-check form-switch ms-2">
-                                    <input className="form-check-input" type="checkbox" id="SwitchCheckDefault1" />
-                                    <label className="form-check-label" htmlFor="SwitchCheckDefault1"></label>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <a href="/" className="item">
-                            <div className="in">
-                                <div>Notification Sound</div>
-                                <span className="text-primary">Beep</span>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
 
                 <div className="listview-title mt-1">Profile Settings</div>
                 <ul className="listview image-listview text inset">
@@ -141,17 +103,7 @@ function Settings() {
                             </div>
                         </a>
                     </li>
-                    <li>
-                        <div className="item">
-                            <div className="in">
-                                <div>Private Profile</div>
-                                <div className="form-check form-switch ms-2">
-                                    <input className="form-check-input" type="checkbox" id="SwitchCheckDefault2" />
-                                    <label className="form-check-label" htmlFor="SwitchCheckDefault2"></label>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+
                 </ul>
 
                 <div className="listview-title mt-1">Security</div>

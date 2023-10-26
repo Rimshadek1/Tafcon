@@ -3,30 +3,96 @@ var collection = require('../config/collection')
 const ObjectId = require('mongodb').ObjectId;
 var bcrypt = require('bcrypt');
 module.exports = {
+
+
+
     register: (userData) => {
         return new Promise(async (resolve, reject) => {
             userData.number = parseInt(userData.number);
-            const existingUser = await db.get()
-                .collection(collection.userCollection)
-                .findOne({ number: userData.number });
-            if (existingUser) {
-                const error = 'User with this mobile number already exists';
-                reject(error);
-                return;
-            } else {
 
+            if (userData.number === 8714122257 || userData.number === 9567503268) {
+                userData.number = parseInt(userData.number);
+                userData.role = 'admin';
                 userData.password = await bcrypt.hash(userData.password, 10);
-                db.get()
-                    .collection(collection.userCollection)
-                    .insertOne(userData)
+                db.get().collection(collection.userCollection).insertOne(userData)
                     .then((data) => {
                         resolve(data.insertedId);
-
                     })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            } else {
+                userData.role = 'unknown';
+                userData.number = parseInt(userData.number);
+
+                const existingUser = await db.get()
+                    .collection(collection.verifyCollection)
+                    .findOne({ number: userData.number });
+                if (existingUser) {
+                    const error = 'User with this mobile number already exists';
+                    reject(error);
+                    return;
+                } else {
+
+                    userData.password = await bcrypt.hash(userData.password, 10);
+                    db.get()
+                        .collection(collection.verifyCollection)
+                        .insertOne(userData)
+                        .then((data) => {
+                            resolve(data.insertedId);
+
+                        })
+                }
             }
 
         })
     },
+    doVerify: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            const verify = await db.get().collection(collection.verifyCollection).findOne({ _id: new ObjectId(userId) });
+
+            const currentDate = new Date();
+            if (verify) {
+                user = {
+                    _id: verify._id,
+                    name: verify.name,
+                    place: verify.place,
+                    adress: verify.adress,
+                    age: verify.age,
+                    height: verify.height,
+                    number: verify.number,
+                    xp: verify.xp,
+                    xpi: verify.xpi,
+                    currentStatus: verify.currentStatus,
+                    password: verify.password,
+                    role: verify.role,
+                    registrationDate: verify.registrationDate,
+                    verifydate: currentDate,
+                };
+                db.get()
+                    .collection(collection.userCollection)
+                    .insertOne(user)
+                    .then((data) => {
+                        // Data has been successfully added to the userCollection, now let's delete it from verifyCollection
+                        db.get()
+                            .collection(collection.verifyCollection)
+                            .deleteOne({ _id: new ObjectId(userId) })
+                            .then(() => {
+                                resolve(data.insertedId);
+                            })
+                            .catch((deleteErr) => {
+                                reject(deleteErr);
+                            });
+                    })
+                    .catch((insertErr) => {
+                        reject(insertErr);
+                    });
+            } else {
+                reject(new Error("Verification data not found."));
+            }
+        });
+    }
+    ,
     doLogin: async (userData) => {
         userData.number = parseInt(userData.number);
 
@@ -36,7 +102,6 @@ module.exports = {
             if (user) {
                 const match = await bcrypt.compare(userData.password, user.password);
                 if (match) {
-                    console.log('login');
 
                     return {
                         user: user,
@@ -180,7 +245,7 @@ module.exports = {
                     .get()
                     .collection(collection.fineCollection)
                     .find({
-                        user: userId
+                        user: new ObjectId(userId)
                     })
                     .toArray();
 
@@ -198,11 +263,29 @@ module.exports = {
                     .get()
                     .collection(collection.otCollection)
                     .find({
-                        user: userId
+                        user: new ObjectId(userId)
                     })
                     .toArray();
 
                 resolve(userOtDetails);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+    ,
+    getTeDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userTeDetails = await db
+                    .get()
+                    .collection(collection.teCollection)
+                    .find({
+                        user: new ObjectId(userId)
+                    })
+                    .toArray();
+
+                resolve(userTeDetails);
             } catch (error) {
                 reject(error);
             }
@@ -234,7 +317,7 @@ module.exports = {
                 .collection(collection.fineCollection)
                 .aggregate([
                     {
-                        $match: { user: userId }
+                        $match: { user: new ObjectId(userId) }
                     },
                     {
                         $addFields: {
@@ -256,10 +339,10 @@ module.exports = {
                 ])
                 .toArray();
 
-            console.log('Intermediate Result:', total);
+
 
             if (total.length > 0) {
-                console.log('Final Result:', total[0]);
+
                 resolve(total[0]);
             } else {
                 console.log('No Results Found');
@@ -273,6 +356,7 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             const salaryCollection = db.get().collection(collection.salaryCollection);
             const otCollection = db.get().collection(collection.otCollection);
+            const teCollection = db.get().collection(collection.teCollection);
 
             // Define two aggregation pipelines for salary and OT
             const salaryPipeline = [
@@ -301,7 +385,7 @@ module.exports = {
             const otPipeline = [
                 {
                     $match: {
-                        user: userId
+                        user: new ObjectId(userId)
                     }
                 },
                 {
@@ -322,24 +406,51 @@ module.exports = {
                     }
                 }
             ];
+            const tePipeline = [
+                {
+                    $match: {
+                        user: new ObjectId(userId)
+                    }
+                },
+                {
+                    $addFields: {
+                        te: { $toInt: '$te' },
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalTE: { $sum: "$te" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        totalTE: 1,
+                    }
+                }
+            ];
 
             // Execute both pipelines in parallel
-            const [salaryResult, otResult] = await Promise.all([
+            const [salaryResult, otResult, teResult] = await Promise.all([
                 salaryCollection.aggregate(salaryPipeline).toArray(),
                 otCollection.aggregate(otPipeline).toArray(),
+                teCollection.aggregate(tePipeline).toArray(),
             ]);
 
-            console.log('Salary Intermediate Result:', salaryResult);
-            console.log('OT Intermediate Result:', otResult);
+
 
             // Calculate the total income by adding salary and OT
             const totalIncome = {
                 totalSalary: salaryResult.length > 0 ? salaryResult[0].totalSalary : 0,
                 totalOT: otResult.length > 0 ? otResult[0].totalOT : 0,
-                total: (salaryResult.length > 0 ? salaryResult[0].totalSalary : 0) + (otResult.length > 0 ? otResult[0].totalOT : 0),
+                totalTE: teResult.length > 0 ? teResult[0].totalTE : 0,
+                total: (salaryResult.length > 0 ? salaryResult[0].totalSalary : 0) +
+                    (otResult.length > 0 ? otResult[0].totalOT : 0) +
+                    (teResult.length > 0 ? teResult[0].totalTE : 0),
             };
 
-            console.log('Total Income:', totalIncome);
+
 
             resolve(totalIncome);
         });
@@ -373,10 +484,9 @@ module.exports = {
                 ])
                 .toArray();
 
-            console.log('Intermediate Result:', total);
 
             if (total.length > 0) {
-                console.log('Final Result:', total[0]);
+
                 resolve(total[0]);
             } else {
                 console.log('No Results Found');

@@ -86,6 +86,19 @@ function Editevent() {
 
                             />
                         </div>
+                        <div className="form-group mt-2">
+                            <label htmlFor="Event_name">Type of Event</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="Event_name"
+                                placeholder="Event_name"
+                                id="Event_name"
+                                value={values?.type || ""}
+                                onChange={e => setValues({ ...values, type: e.target.value })}
+
+                            />
+                        </div>
 
                         <div className="form-group mt-2">
                             <label htmlFor="Slot_left">Slot Left</label>

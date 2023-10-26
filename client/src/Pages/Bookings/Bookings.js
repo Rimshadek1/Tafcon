@@ -67,7 +67,7 @@ function Bookings() {
 
                         <ul class="listview image-listview flush">
                             <li class="active">
-                                <a href="/" class="item">
+                                <a href="/bookings" class="item">
                                     <div class="icon-box bg-danger">
                                         <img src="logo/logoonly.png" alt="" />
                                     </div>

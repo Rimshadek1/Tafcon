@@ -23,8 +23,16 @@ function SiteDetails() {
         axios.get('http://localhost:3001/viewevent')
             .then((res) => {
                 if (Array.isArray(res.data)) {
-                    // Verify that the response data is an array
-                    setEvents(res.data); // Set the events data received from the backend
+                    // Convert date-time strings to Date objects
+                    const eventsWithDates = res.data.map(event => ({
+                        ...event,
+                        currentDateTime: new Date(event.currentDateTime)
+                    }));
+
+                    // Sort events by currentDateTime in ascending order
+                    eventsWithDates.sort((a, b) => b.currentDateTime - a.currentDateTime);
+
+                    setEvents(eventsWithDates);
                 } else {
                     console.error('Data received from the server is not an array.');
                 }

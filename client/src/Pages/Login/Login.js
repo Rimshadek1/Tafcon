@@ -23,13 +23,19 @@ function Login() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     if (res.data.role === 'admin') {
-                        setLoggedInUsername(number)
-                        setId(res.data.id)
-                        navigate('/viewevents')
+                        // Store the JWT token (customize this part based on your server response)
+                        localStorage.setItem('jwtToken', res.data.token);
+
+                        setLoggedInUsername(number);
+                        setId(res.data.id);
+                        navigate('/viewevents');
                     } else {
-                        setLoggedInUsername(number)
-                        setId(res.data.id)
-                        navigate('/')
+                        // Store the JWT token (customize this part based on your server response)
+                        localStorage.setItem('jwtToken', res.data.token);
+
+                        setLoggedInUsername(number);
+                        setId(res.data.id);
+                        navigate('/');
                     }
                 }
             })
@@ -43,9 +49,10 @@ function Login() {
                     window.location.reload();
                 }
             });
-
-
     };
+
+
+
     console.log('setLoggedInUsername is a function:', typeof setLoggedInUsername === 'function');
     console.log('setId is a function:', typeof setId === 'function');
 

@@ -30,7 +30,18 @@ function Viewevents() {
             }
         }).catch(err => console.log(err))
     }, []);
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:3001/logout').then((res) => {
+                alert(res.data.message)
+                navigate('/login');
+            })
 
+        } catch (error) {
+            console.error(error);
+            navigate('/login');
+        }
+    };
 
     const handleDelete = (id) => {
         axios.delete(`http://localhost:3001/admin/delete-event/${id}`)
@@ -76,13 +87,13 @@ function Viewevents() {
                             </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/add-salary" className="btn btn-success ml-auto">
-                                Add Salary
-                            </a>
+                            <Link to="/verifyemp" className="btn btn-success ml-auto">
+                                Verify Employees
+                            </Link>
                         </div>
                         <div className="col">
                             <Link to="/viewwithdraw" className="btn btn-warning ml-auto">
-                                View Salary
+                                View Withdraw
                             </Link>
                         </div>
                         <div className="col">
@@ -142,6 +153,7 @@ function Viewevents() {
                             Event deleted successfully!
                         </div>
                     )}
+                    <button className='btn btn-danger' onClick={handleLogout}>Logout</button>
                 </div>
             </section >
         </div >

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './assets/css/style.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -32,6 +32,7 @@ function Home() {
     const [details, setDetails] = useState([]);
     const [detailsFine, setDetailsFine] = useState([]);
     const [detailsOt, setDetailsOt] = useState([]);
+    const [detailsTe, setDetailsTe] = useState([]);
     const [detailsWithdraw, setDetailsWithdraw] = useState([]);
     const [mergedDetails, setMergedDetails] = useState([]);
     useEffect(() => {
@@ -40,13 +41,11 @@ function Home() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetails(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching salary data:', error);
-                alert('Failed to fetch data from the server');
+                // alert('Failed to fetch data from the server');
             });
 
         // Fetch fine details
@@ -54,13 +53,10 @@ function Home() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsFine(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching fine data:', error);
-                alert('Failed to fetch data from the server');
             });
 
         // Fetch overtime details
@@ -68,39 +64,43 @@ function Home() {
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsOt(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching OT data:', error);
-                alert('Failed to fetch data from the server');
             });
-    }, []);
-    // Fetch withdraw details
-    useEffect(() => {
         // Fetch withdraw details
         axios.get('http://localhost:3001/withdrawf')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsWithdraw(res.data.details);
-                } else {
-                    alert('Something went wrong');
                 }
             })
             .catch((error) => {
                 console.error('Error fetching withdraw data:', error);
-                alert('Failed to fetch data from the server');
+            });
+        // fetch Te details
+        axios.get('http://localhost:3001/te')
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    console.log(res.data.details);
+                    setDetailsTe(res.data.details);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching withdraw data:', error);
             });
     }, []);
 
+
+
     // Merge salary, fine, OT, and withdraw details
     useEffect(() => {
-        const merged = [...details, ...detailsFine, ...detailsOt, ...detailsWithdraw];
+        const merged = [...details, ...detailsFine, ...detailsOt, ...detailsWithdraw, ...detailsTe];
         // Sort the merged array by date in descending order
         const sortedDetails = merged.sort((a, b) => new Date(b.date) - new Date(a.date));
         setMergedDetails(sortedDetails);
-    }, [details, detailsFine, detailsOt, detailsWithdraw]);
+    }, [details, detailsFine, detailsOt, detailsWithdraw, detailsTe]);
 
 
     // slider
@@ -111,6 +111,7 @@ function Home() {
     const [scrollLeft, setScrollLeft] = useState(0);
     const [role, setRole] = useState()
     const [showButton, setShowButton] = useState(false);
+
     const handleMouseDown = (e) => {
         setIsDragging(true);
         setStartX(e.pageX - sliderRef.current.offsetLeft);
@@ -152,13 +153,14 @@ function Home() {
         axios.get('http://localhost:3001/').then(res => {
             if (res.data.status === 'success') {
                 setRole(res.data.role)
-
                 setSuc('success okk')
             } else {
-                alert('status failed')
                 navigate('/login')
+                window.location.reload();
             }
-        }).catch(err => console.log(err))
+        }).catch(err => console.log(err),
+
+        )
     }, []);
 
     //profilepicture
@@ -200,13 +202,22 @@ function Home() {
     const getBackgroundColor = () => {
         // Define colors for different roles
         if (role === 'class-A') {
-            return 'yellow';
+            return 'linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(28,215,21,1) 100%, rgba(255,231,0,1) 100%)';
         } else if (role === 'class-C') {
-            return 'violet';
+            return 'linear-gradient(90deg, rgba(255,231,0,1) 0%, rgba(251,214,210,1) 0%, rgba(0,0,0,1) 100%, rgba(238,238,238,1) 100%, rgba(2,0,36,1) 100%)';
         } else if (role === 'class-B') {
-            return 'green'
+            return 'linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(21,191,215,1) 100%, rgba(255,231,0,1) 100%)'
         } else if (role === 'main-boy') {
-            return 'gold'
+            return 'linear-gradient(90deg, rgba(92,89,138,1) 9%, rgba(2,0,36,1) 100%, rgba(238,238,238,1) 100%, rgba(255,231,0,1)'
+        }
+        else if (role === 'supervisor') {
+            return ' linear-gradient(90deg, rgba(255,231,0,1) 0%, rgba(255,55,99,1) 0%, rgba(220,220,222,1) 54%, rgba(238,238,238,1) 100%, rgba(2,0,36,1) 100%)'
+        }
+        else if (role === 'caption') {
+            return 'linear-gradient(90deg, rgba(255,231,0,1) 0%, rgba(240,255,55,1) 0%, rgba(2,0,36,1) 100%, rgba(238,238,238,1) 100%)'
+        }
+        else if (role === 'admin') {
+            return 'black'
         }
         // Default background color (you can change this to another color if needed)
         return 'white';
@@ -218,23 +229,45 @@ function Home() {
             setShowButton(true);
         }
     }, [role]);
+    function handleClick() {
+        alert('app is under proccessing, please wait until the work is over!!')
+    }
 
     return (
         <div>
+
+
             {/* Header */}
-            <div className="appHeader bg-danger text-light">
-                <div className="left text-white">
-                    <a href="#" className="headerButton" data-bs-toggle="modal" data-bs-target="#sidebarPanel">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" viewBox="0 0 20 14" id="menu" fill="#FFFFFF">
-                            <g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
-                                <g stroke="#FFFFFF" stroke-width="2" transform="translate(-1629 -1753)">
-                                    <g transform="translate(1630 1754)">
-                                        <path d="M0 6h18M0 0h18M0 12h18"></path>
-                                    </g>
-                                </g>
-                            </g>
-                        </svg>
-                    </a>
+            < div className="appHeader bg-danger text-light ">
+                <div className="left">
+                    <div className='class ms-5' style={{ background: getBackgroundColor() }} >
+                        {role && (
+                            <h3 className='classed'>
+                                {
+                                    role === 'class-B' ? 'B' :
+                                        role === 'class-C' ? 'C' :
+                                            role === 'class-A' ? 'A' :
+                                                role === 'main-boy' ? 'M' :
+                                                    role === 'supervisor' ? 'S' :
+                                                        role === 'captain' ? 'N' :
+                                                            role === 'admin' ? 'A' :
+                                                                role}
+                            </h3>
+                        )}
+
+                    </div>
+                    <Link to='/roledetails' className='imaged w32 mt-1 exclamation'>
+                        <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 32 32" fill='white'><path
+                            d="M12,14a1.25,1.25,0,1,0,1.25,1.25A1.25,1.25,0,0,0,12,14Zm0-1.5a1,1,0,0,0,1-1v-3a1,1,0,0,0-2,0v3A1,
+      1,
+      0,
+      0,
+      0,
+      12,
+      12.5ZM12,2A10,10,0,1,0,22,12,
+      10.01114,10.01114,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8.00917,8.00917,0,0,1,12,20Z"></path></svg>
+                    </Link>
+
                 </div>
                 <div className="pageTitle">
                     <img src="logo/tafcon.png" alt="logo" className="logo" />
@@ -243,7 +276,8 @@ function Home() {
                     <Link to="/bookings" className="headerButton">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" id="bag" fill="none">
                             <g fill="none" fill-rule="evenodd" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
-                                <path fill="none" d="M14.01373 20.0000001L5.66590392 20.0000001C2.59954235 20.0000001.247139589 18.8924486.915331812 14.4347827L1.69336385 8.39359272C2.10526317 6.16933642 3.52402748 5.31807783 4.76887874 5.31807783L14.9473685 5.31807783C16.2105264 5.31807783 17.5469108 6.23340964 18.0228834 8.39359272L18.8009154 14.4347827C19.3684211 18.3890161 17.0800916 20.0000001 14.01373 20.0000001zM14.1510298 5.09839819C14.1510298 2.71232585 12.216736 .7779932 9.83066366 .7779932L9.83066366.7779932C8.68166274.773163349 7.57805185 1.22619323 6.76386233 2.03694736 5.9496728 2.84770148 5.49199087 3.94938696 5.49199087 5.09839819L5.49199087 5.09839819"></path>
+                                <path fill="none" d="M14.01373 20.0000001L5.66590392 20.0000001C2.59954235 20.0000001.247139589 18.8924486.915331812 14.4347827L1.69336385 8.39359272C2.10526317 
+                                6.16933642 3.52402748 5.31807783 4.76887874 5.31807783L14.9473685 5.31807783C16.2105264 5.31807783 17.5469108 6.23340964 18.0228834 8.39359272L18.8009154 14.4347827C19.3684211 18.3890161 17.0800916 20.0000001 14.01373 20.0000001zM14.1510298 5.09839819C14.1510298 2.71232585 12.216736 .7779932 9.83066366 .7779932L9.83066366.7779932C8.68166274.773163349 7.57805185 1.22619323 6.76386233 2.03694736 5.9496728 2.84770148 5.49199087 3.94938696 5.49199087 5.09839819L5.49199087 5.09839819"></path>
                                 <line x1="12.796" x2="12.751" y1="9.602" y2="9.602"></line>
                                 <line x1="6.966" x2="6.92" y1="9.602" y2="9.602"></line>
                             </g>
@@ -251,22 +285,18 @@ function Home() {
 
                         <span className="badge badge-success"></span>
                     </Link>
-                    <div className='class' style={{ background: getBackgroundColor() }} >
-                        {role && (
-                            <h4 className='classed'>
-                                {role}
-                            </h4>
-                        )}
-                    </div>
+
                     <Link to="/settings" className="headerButton">
                         <img src={'http://127.0.0.1:3001/Profile-pictures/' + imageUrl} class="imaged w32" ></img>
                     </Link>
                 </div>
             </div >
+
             {/* Header */}
             {/* body */}
+
             <div id="appCapsule">
-                <div className="section wallet-card-section pt-1 mt-0">
+                <div className="section wallet-card-section pt-1">
                     <div className="wallet-card">
                         <div className="balance">
                             <div className="left">
@@ -276,7 +306,7 @@ function Home() {
                         </div>
 
                         <div className="wallet-footer">
-                            <div className="item text-light">
+                            <div className="item text-light" onClick={handleClick}>
                                 <a href="/" data-bs-toggle="modal" data-bs-target="#withdrawActionSheet">
                                     <div className="icon-wrapper bg-danger">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="arrow-down" width="24" height="24" style={{ fill: '#FFFFFF', width: '24px', height: '24px' }}>
@@ -289,7 +319,7 @@ function Home() {
                                 </a>
                             </div>
 
-                            <div className="item">
+                            <div className="item" onClick={handleClick}>
                                 <a href="/">
                                     {/* data-bs-toggle="modal" data-bs-target="#depositActionSheet" */}
                                     <div className="icon-wrapper">
@@ -298,7 +328,7 @@ function Home() {
                                     <strong>G-Pay</strong>
                                 </a>
                             </div>
-                            <div className="item">
+                            <div className="item" onClick={handleClick}>
                                 <a href="/">
                                     {/* data-bs-toggle="modal" data-bs-target="#sendActionSheet" */}
                                     <div className="icon-wrapper bg-success">
@@ -307,7 +337,7 @@ function Home() {
                                     <strong>Phone Pay</strong>
                                 </a>
                             </div>
-                            <div className="item">
+                            <div className="item" onClick={handleClick}>
                                 <a href="/">
                                     {/* data-bs-toggle="modal" data-bs-target="#exchangeActionSheet" */}
                                     <div className="icon-wrapper bg-warning">
@@ -353,6 +383,7 @@ function Home() {
 
 
 
+
                 <div className="section mt-4">
                     <div className="section-heading">
                         <h2 className="title">Transactions</h2>
@@ -373,6 +404,8 @@ function Home() {
                                                     <img src="transaction/fine.jpg" alt="img" className="image-block imaged w48" />
                                                 ) : detail.otfor ? (
                                                     <img src="transaction/ot.jpg" alt="img" className="image-block imaged w48" />
+                                                ) : detail.tefor ? (
+                                                    <img src="transaction/te.jpg" alt="img" className="image-block imaged w48" />
                                                 ) : detail.amount ? (
                                                     <img src="transaction/withdraw.jpg" alt="img" className="image-block imaged w48" />
                                                 ) : (
@@ -385,6 +418,8 @@ function Home() {
                                                     <strong>Fine for: {detail.finefor}</strong>
                                                 ) : detail.otfor ? (
                                                     <strong>OT for: {detail.otfor}</strong>
+                                                ) : detail.tefor ? (
+                                                    <strong>Te for: {detail.tefor}</strong>
                                                 ) : detail.amount ? (
                                                     <strong>withdraw for: Personal</strong>
                                                 ) : (
@@ -398,6 +433,8 @@ function Home() {
                                                 <div className="price text-danger">₹ {detail.fine}</div>
                                             ) : detail.ot ? (
                                                 <div className="price text-success">₹ {detail.ot}</div>
+                                            ) : detail.te ? (
+                                                <div className="price text-success">₹ {detail.te}</div>
                                             ) : detail.amount ? (
                                                 <div className="price text-danger">₹ {detail.amount}</div>
                                             ) : (
@@ -524,6 +561,7 @@ function Home() {
                 </div >
                 {/* footer */}
             </div >
+
         </div >
 
 

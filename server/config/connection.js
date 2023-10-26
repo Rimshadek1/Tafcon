@@ -1,11 +1,12 @@
 const { MongoClient } = require("mongodb");
-
+require('dotenv').config();
+const mongoUrl = process.env.mongoUrl;
 const state = {
     db: null,
 };
 
 // mongodb connection string
-const url = "mongodb://127.0.0.1:27017";
+const url = mongoUrl;
 // database name
 const dbName = "Tafcon";
 

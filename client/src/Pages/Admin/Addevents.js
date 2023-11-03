@@ -8,6 +8,8 @@ function Addevents() {
     const [event, setEvent] = useState()
     const [type, setType] = useState()
     const [slot, setSlot] = useState()
+    const [ref, setRef] = useState()
+    const [timeevent, setTimeevent] = useState()
     const navigate = useNavigate();
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -18,6 +20,8 @@ function Addevents() {
         formData.append('event', event);
         formData.append('type', type);
         formData.append('slot', slot);
+        formData.append('ref', ref);
+        formData.append('timeevent', timeevent);
 
         axios.post('http://localhost:3001/addevent', formData)
             .then((res) => {
@@ -94,6 +98,17 @@ function Addevents() {
                             />
                         </div>
                         <div className="form-group mt-2">
+                            <label htmlFor="event">Reffered By</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="ref"
+                                placeholder="Refer"
+                                id="ref"
+                                onChange={(e) => setRef(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group mt-2">
                             <label htmlFor="event">Event Type</label>
                             <select
                                 className="form-control"
@@ -101,8 +116,23 @@ function Addevents() {
                                 id="type"
                                 onChange={(e) => setType(e.target.value)}
                             >
+                                <option value="select">select</option>
                                 <option value="Normal">Normal</option>
                                 <option value="Islamic">Islamic</option>
+                            </select>
+                        </div>
+                        <div className="form-group mt-2">
+                            <label htmlFor="Timeevent">Event Time</label>
+                            <select
+                                className="form-control"
+                                name="Timeevent"
+                                id="Timeevent"
+                                onChange={(e) => setTimeevent(e.target.value)}
+                            >
+                                <option value="select">select</option>
+                                <option value="Morning">Morning</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Night">Night</option>
                             </select>
                         </div>
 

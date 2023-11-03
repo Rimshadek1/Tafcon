@@ -21,53 +21,48 @@ function Roledetails() {
 
     const roles = [
         {
-            title: 'Main-Boy',
+            title: 'A1',
+            qualification: [
+                '55 Islamic Boufet',
+                '100 + Works',
+                'Night work 15%',
+                'Long work 10%',
+            ],
+        },
+        {
+            title: 'A2',
+            qualification: [
+                '40 Islamic Boufet',
+                '70 Works',
+                'Night work 15%',
+                'Long work 10%',
+            ],
+        },
+        {
+            title: 'A3',
             qualification: [
                 '25 Islamic Boufet',
+                '50 Works',
+                'Night work 15%',
+                'Long work 10%',
+            ],
+        },
+        {
+            title: 'A4',
+            qualification: [
+                '12 Islamic Boufet',
                 '30 Works',
-                '10 times Captain',
+                'Night work 15%',
+                'Long work 10%',
             ],
         },
         {
-            title: 'Captain',
+            title: 'A5',
             qualification: [
-                '20 Islamic Boufet',
-                '25 Works',
-                '10 times Supervisor',
+                'Fresher'
             ],
         },
-        {
-            title: 'Supervisor',
-            qualification: [
-                '20 Islamic Boufet',
-                '25 Works',
-                '10 times Class-A',
-            ],
-        },
-        {
-            title: 'Class-A',
-            qualification: [
-                '15 Islamic Boufet',
-                '25 Works',
-                '10 times Class-B',
-            ],
-        },
-        {
-            title: 'Class-B',
-            qualification: [
-                '10 Islamic Boufet',
-                '20 Works',
-                '10 times Class-C',
-            ],
-        },
-        {
-            title: 'Class-C',
-            qualification: [
-                '7 Islamic Boufet',
-                '15 Works',
-                'Fresher',
-            ],
-        },
+
     ];
 
 
@@ -79,7 +74,7 @@ function Roledetails() {
                 <div className="left">
                     <a className="headerButton goBack" onClick={handleGoBack}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="40" viewBox="0 0 64 64" id="arrow">
-                            <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
+                            <path fill="#FFB400 " d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </a>
                 </div>
@@ -89,7 +84,7 @@ function Roledetails() {
                 <div className="right">
                     <Link to="/bookings" className="headerButton">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" id="bag" fill="none">
-                            <g fill="none" fill-rule="evenodd" stroke="#FF396F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
+                            <g fill="none" fill-rule="evenodd" stroke="#FFB400 " stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="translate(2.5 1.5)">
                                 <path fill="none" d="M14.01373 20.0000001L5.66590392 20.0000001C2.59954235 20.0000001.247139589 18.8924486.915331812 14.4347827L1.69336385 8.39359272C2.10526317 6.16933642 3.52402748 5.31807783 4.76887874 5.31807783L14.9473685 5.31807783C16.2105264 5.31807783 17.5469108 6.23340964 18.0228834 8.39359272L18.8009154 14.4347827C19.3684211 18.3890161 17.0800916 20.0000001 14.01373 20.0000001zM14.1510298 5.09839819C14.1510298 2.71232585 12.216736 .7779932 9.83066366 .7779932L9.83066366.7779932C8.68166274.773163349 7.57805185 1.22619323 6.76386233 2.03694736 5.9496728 2.84770148 5.49199087 3.94938696 5.49199087 5.09839819L5.49199087 5.09839819"></path>
                                 <line x1="12.796" x2="12.751" y1="9.602" y2="9.602"></line>
                                 <line x1="6.966" x2="6.92" y1="9.602" y2="9.602"></line>
@@ -106,10 +101,10 @@ function Roledetails() {
 
                     <div className="cardxp">
                         {roles.map((role, index) => (
-                            <div className="cards bg-info" key={index}>
+                            <div className="cards bg-warning mx-auto" key={index}>
                                 <h2 className='mt-3 text-white'>{role.title}</h2>
-                                <p>
-                                    <h3 className='mb-2 text-white text-decoration-underline'>Qualification</h3>
+                                <p className=' text-white'>
+                                    <h3 className='mb-2 text-decoration-underline text-white'>Qualification</h3>
                                     {role.qualification.map((item, itemIndex) => (
                                         <div key={itemIndex}>{`* ${item}`}</div>
                                     ))}
@@ -118,18 +113,7 @@ function Roledetails() {
                         ))}
                     </div>
                 </div>
-                <div className="centered-flowChart">
-                    {role === 'main-boy' ? (
-                        <div className="graded"  >MAIN-BOY</div>
-                    ) : (
-                        <div className="grade" >Main-Boy</div>
-                    )}
-
-                    <div className="arrow">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" id="arrow">
-                            <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
-                        </svg>
-                    </div>
+                <div className="centered-flowChart text-warning">
                     {role === 'captain' ? (
                         <div className="graded" >CAPTAIN</div>
                     ) : (
@@ -141,6 +125,18 @@ function Roledetails() {
                             <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </div>
+                    {role === 'main-boy' ? (
+                        <div className="graded"  >MAIN-BOY</div>
+                    ) : (
+                        <div className="grade" >Main-Boy</div>
+                    )}
+
+                    <div className="arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" id="arrow">
+                            <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
+                        </svg>
+                    </div>
+
                     {role === 'supervisor' ? (
                         <div className="graded" >SUPERVISOR</div>
                     ) : (
@@ -152,30 +148,50 @@ function Roledetails() {
                             <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </div>
-                    {role === 'class-A' ? (
-                        <div className="graded" >CLASS-A</div>
+                    {role === 'A1' ? (
+                        <div className="graded" >A1</div>
                     ) : (
-                        <div className="grade" >Class-A</div>
+                        <div className="grade" >A1</div>
                     )}
                     <div className="arrow">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" id="arrow">
                             <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </div>
-                    {role === 'class-B' ? (
-                        <div className="graded" >CLASS-B</div>
+                    {role === 'A2' ? (
+                        <div className="graded" >A2</div>
                     ) : (
-                        <div className="grade" >Class-B</div>
+                        <div className="grade" >A2</div>
                     )}
                     <div className="arrow">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" id="arrow">
                             <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
                         </svg>
                     </div>
-                    {role === 'class-C' ? (
-                        <div className="graded" >CLASS-C</div>
+                    {role === 'A3' ? (
+                        <div className="graded" >A3</div>
                     ) : (
-                        <div className="grade" >Class-C</div>
+                        <div className="grade" >A3</div>
+                    )}
+                    <div className="arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" id="arrow">
+                            <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
+                        </svg>
+                    </div>
+                    {role === 'A4' ? (
+                        <div className="graded" >A4</div>
+                    ) : (
+                        <div className="grade" >A4</div>
+                    )}
+                    <div className="arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" id="arrow">
+                            <path fill="#FF396F" d="M37.9 46 24.1 32.3l13.8-13.7 2 2-11.8 11.7L39.9 44l-2 2"></path>
+                        </svg>
+                    </div>
+                    {role === 'A5' ? (
+                        <div className="graded" >A5</div>
+                    ) : (
+                        <div className="grade" >A5</div>
                     )}
 
                 </div>
@@ -185,10 +201,10 @@ function Roledetails() {
 
             {/* footer */}
             <div className="appBottomMenu">
-                <Link to="/" className="item">
+                <Link to="/" className="item active">
                     <div className="col">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="pie-chart" width="25" height="25" stroke="#FF396F">
-                            <path d="M25,17H15V7a1,1,0,0,0-1-1A12,12,0,1,0,26,18,1,1,0,0,0,25,17ZM14,28A10,10,0,0,1,13,8.05V18a1,1,0,0,0,1,1H24A10,10,0,0,1,14,28ZM18,2a1,1,0,0,0-1,1V14a1,1,0,0,0,1,1H29a1,1,0,0,0,1-1A12,12,0,0,0,18,2Zm1,11V4.05a10,10,0,0,1,9,9Z" data-name="96  Pie Chart, Chart, Diagram, Pie"></path>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="pie-chart" width="25" height="25" stroke="#FFB400">
+                            <path stroke="#FFB400" d="M25,17H15V7a1,1,0,0,0-1-1A12,12,0,1,0,26,18,1,1,0,0,0,25,17ZM14,28A10,10,0,0,1,13,8.05V18a1,1,0,0,0,1,1H24A10,10,0,0,1,14,28ZM18,2a1,1,0,0,0-1,1V14a1,1,0,0,0,1,1H29a1,1,0,0,0,1-1A12,12,0,0,0,18,2Zm1,11V4.05a10,10,0,0,1,9,9Z" data-name="96  Pie Chart, Chart, Diagram, Pie"></path>
                         </svg>
 
 

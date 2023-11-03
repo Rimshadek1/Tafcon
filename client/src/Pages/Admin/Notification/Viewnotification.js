@@ -1,58 +1,42 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './css/Viewevents.css'
-function Viewevents() {
-    const [events, setEvents] = useState([]);
+import React, { useEffect, useState } from 'react'
+import { Link, } from 'react-router-dom'
+
+function Viewnotification() {
+
+    const [notifications, setNotifications] = useState([]);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
-    const [suc, setSuc] = useState();
-    const navigate = useNavigate()
-    axios.defaults.withCredentials = true;
     useEffect(() => {
-        // Make an HTTP GET request to your backend endpoint that retrieves events
-        axios.get('http://localhost:3001/viewevent')
+        axios.get('http://localhost:3001/notification')
             .then((res) => {
-                setEvents(res.data); // Set the events data received from the backend
+                if (res.data && res.data.notification) {
+                    console.log(res.data.notification);
+                    setNotifications(res.data.notification);
+
+                } else {
+                    alert('Error');
+                }
             })
             .catch((error) => {
                 console.error(error);
+                
             });
     }, []);
-    useEffect(() => {
-        axios.get('http://localhost:3001/viewevents').then(res => {
-            console.log(res.data);
-            if (res.data.status === 'success') {
-                console.log('ok');
-                setSuc('success okk')
-            } else {
-                alert('status failed')
-                navigate('/login')
-            }
-        }).catch(err => console.log(err))
-    }, []);
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:3001/logout').then((res) => {
-                alert(res.data.message)
-                navigate('/login');
-            })
-
-        } catch (error) {
-            console.error(error);
-            navigate('/login');
-        }
-    };
-
     const handleDelete = (id) => {
-        axios.delete(`http://localhost:3001/admin/delete-event/${id}`)
+        axios.delete(`http://localhost:3001/notification/${id}`)
             .then((res) => {
                 // Check if the delete operation was successful
                 if (res.data.status === 'ok') {
                     setDeleteSuccess(true); // Set the success state to true
-                    // Fetch the updated events after successful deletion
-                    axios.get('http://localhost:3001/viewevent')
+                    axios.get('http://localhost:3001/notification')
                         .then((res) => {
-                            setEvents(res.data);
+                            if (res.data && res.data.notification) {
+                                console.log(res.data.notification);
+                                setNotifications(res.data.notification);
+
+                            } else {
+                                alert('Error');
+                            }
                         })
                         .catch((error) => {
                             console.error(error);
@@ -67,10 +51,6 @@ function Viewevents() {
         }, 5000);
 
     };
-
-
-
-
     return (
         <div>
             <section>
@@ -121,29 +101,18 @@ function Viewevents() {
                         <thead>
                             <tr>
                                 <th scope="col">No</th>
-                                <th scope="col">Location</th>
-                                <th scope="col">Time</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Event_name</th>
-                                <th scope="col">Slot_left</th>
-                                <th scope="col">Actions</th>
+                                <th scope="col">Notification</th>
+
                             </tr>
                         </thead>
                         <tbody>
-                            {events.map((event, index) => (
+                            {notifications.map((event, index) => (
                                 <tr key={event._id}>
                                     <th scope="row">{index + 1}</th>
-                                    <td>{event.location}</td>
-                                    <td>{event.time}</td>
-                                    <td>{event.date}</td>
-                                    <td>{event.event}</td>
+                                    <td>{event.notification.notification}</td>
+
                                     <td>
-                                        {event.slot === 0 ? "Slot is full" : event.slot}
-                                    </td>
-                                    <td>
-                                        <Link to={`/editevents/${event._id}`} className="btn btn-primary">
-                                            Edit
-                                        </Link>
+
                                         &nbsp;&nbsp;
 
                                         <button
@@ -163,11 +132,10 @@ function Viewevents() {
                             Event deleted successfully!
                         </div>
                     )}
-                    <button className='btn btn-danger' onClick={handleLogout}>Logout</button>
                 </div>
             </section >
         </div >
-    );
+    )
 }
 
-export default Viewevents;
+export default Viewnotification

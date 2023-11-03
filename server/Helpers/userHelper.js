@@ -495,6 +495,21 @@ module.exports = {
 
         });
     },
+    notification: () => {
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.notificationCollection)
+                .find()
+                .sort({ date: -1 }) // Sort by notificationDate in descending order (latest date first)
+                .toArray()
+                .then((notifications) => {
+                    resolve(notifications);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 
 
 

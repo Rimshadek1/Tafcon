@@ -40,13 +40,14 @@ function Editrole() {
                                 onChange={e => setValues({ ...values, role: e.target.value })}
                             >
                                 <option value="">Select Role</option>
-                                <option value="class-A">Class A</option>
-                                <option value="class-B">Class B</option>
-                                <option value="class-C">Class C</option>
+                                <option value="A1">A1</option>
+                                <option value="A2">A2</option>
+                                <option value="A3">A3</option>
+                                <option value="A4">A4</option>
+                                <option value="A5">A5</option>
                                 <option value="supervisor">Supervisor</option>
                                 <option value="main-boy">Main Boy</option>
                                 <option value="captain">Captain</option>
-                                <option value="user">User</option>
                             </select>
                         </div>
 

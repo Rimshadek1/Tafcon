@@ -63,6 +63,19 @@ module.exports = {
         });
     }
     ,
+    deleteNotification: (proId) => {
+        return new Promise((resolve, reject) => {
+
+            db.get().collection(collection.notificationCollection).deleteOne({ _id: new ObjectId(proId) })
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+    ,
     getEventDetails: (proId) => {
         return new Promise((resolve, reject) => {
             try {
@@ -112,6 +125,17 @@ module.exports = {
                 console.error(error);
                 res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
             });
+    },
+    getcalander: (req, res) => {
+        db.get().collection(collection.eventCollection).find().toArray().then((events) => {
+
+            console.log(events);
+            res.json({ events })
+        }).catch((error) => {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' }); // Handle errors and send an error response
+        });
+
     },
     getUserDetails: (proId) => {
         return new Promise((resolve, reject) => {
@@ -243,12 +267,47 @@ module.exports = {
             console.log(userDetails);
             db.get().collection(collection.fineCollection).findOne({
                 user: new ObjectId(userId),
-                eventId: new ObjectId(userDetails.eventId)
+                eventId: new ObjectId(userDetails)
             }).then((data) => {
                 resolve(data)
             })
         })
-    }, updateFine: (userId, eventId, fineDetails) => {
+    },
+    viewOt: (userId, userDetails) => {
+
+        return new Promise((resolve, reject) => {
+            console.log(userDetails);
+            db.get().collection(collection.otCollection).findOne({
+                user: new ObjectId(userId),
+                eventId: new ObjectId(userDetails)
+            }).then((data) => {
+                resolve(data)
+            })
+        })
+    },
+    viewTe: (userId, userDetails) => {
+
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.teCollection).findOne({
+                user: new ObjectId(userId),
+                eventId: new ObjectId(userDetails)
+            }).then((data) => {
+                resolve(data)
+            })
+        })
+    },
+    viewSalary: (userId, userDetails) => {
+
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.salaryCollection).findOne({
+                user: new ObjectId(userId),
+                event: new ObjectId(userDetails)
+            }).then((data) => {
+                resolve(data)
+            })
+        })
+    },
+    updateFine: (userId, eventId, fineDetails) => {
         return new Promise((resolve, reject) => {
             const fine = fineDetails.values.fine;
 
@@ -270,6 +329,110 @@ module.exports = {
             });
         });
     }
+
+    ,
+    updateOt: (userId, eventId, fineDetails) => {
+        return new Promise((resolve, reject) => {
+            const ot = fineDetails.values.ot;
+
+            // Ensure that the fine value is negative
+            const updatedOt = Math.abs(parseInt(ot, 10));
+
+            db.get().collection(collection.otCollection).updateOne({
+                user: new ObjectId(userId),
+                eventId: new ObjectId(eventId)
+            }, {
+                $set: {
+                    ot: updatedOt,
+                    otfor: fineDetails.values.otfor
+                }
+            }).then((response) => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    ,
+    updateSalary: (userId, eventId, fineDetails) => {
+        return new Promise((resolve, reject) => {
+            const salary = fineDetails.salary;
+
+            // Ensure that the fine value is negative
+            const updatedSalary = Math.abs(parseInt(salary, 10));
+
+            db.get().collection(collection.salaryCollection).updateOne({
+                user: new ObjectId(userId),
+                event: new ObjectId(eventId)
+            }, {
+                $set: {
+                    salary: updatedSalary,
+
+                }
+            }).then((response) => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    ,
+    updateTe: (userId, eventId, fineDetails) => {
+        return new Promise((resolve, reject) => {
+            const te = fineDetails.values.te;
+            const updatedTe = Math.abs(parseInt(te, 10));
+
+            const teCollection = db.get().collection(collection.teCollection);
+            const withdrawCollection = db.get().collection(collection.withdrawCollection);
+            teCollection.updateOne(
+                {
+                    user: new ObjectId(userId),
+                    eventId: new ObjectId(eventId)
+                },
+                {
+                    $set: {
+                        te: updatedTe,
+                        tefor: fineDetails.values.tefor
+                    }
+                }
+            )
+                .then((teResult) => {
+                    if (teResult.modifiedCount === 1) {
+                        console.log('ok');
+                        withdrawCollection.updateOne(
+                            {
+                                userId: new ObjectId(userId),
+                                eventId: new ObjectId(eventId)
+                            },
+                            {
+                                $set: {
+                                    amount: -updatedTe,
+                                    tefor: fineDetails.values.tefor
+                                }
+                            }
+                        )
+                            .then(() => {
+                                console.log("Both collections updated successfully.");
+                                resolve();
+                            })
+                            .catch((withdrawErr) => {
+                                console.error("Error updating withdrawCollection:", withdrawErr);
+                                reject(withdrawErr);
+                            });
+                    } else {
+                        console.error("Error updating teCollection: No matching document found.");
+                        reject(new Error("No matching document found in teCollection."));
+                    }
+                })
+                .catch((teErr) => {
+                    console.error("Error updating teCollection:", teErr);
+                    reject(teErr);
+                });
+        });
+    }
+
 
     ,
     addTe: (userId, eventId, userDetails) => {
@@ -302,6 +465,8 @@ module.exports = {
                     const user = await db.get().collection(collection.userCollection).findOne({ _id: new ObjectId(userId) })
                     const teWithdraw = {
                         userId: new ObjectId(userId),
+                        eventId: new ObjectId(eventId),
+                        tefor: userDetails.teFor,
                         name: 'Travel Exp',
                         number: user.number,
                         amount: -parseInt(userDetails.te, 10),
@@ -368,22 +533,28 @@ module.exports = {
                 let salary;
 
                 switch (user.role) {
-                    case 'class-C':
+                    case 'A5':
+                        salary = 410;
+                        break;
+                    case 'A4':
                         salary = 420;
                         break;
-                    case 'class-B':
+                    case 'A3':
                         salary = 430;
                         break;
-                    case 'class-A':
+                    case 'A2':
                         salary = 440;
                         break;
-                    case 'supervisor':
+                    case 'A1':
                         salary = 450;
                         break;
-                    case 'caption':
+                    case 'supervisor':
                         salary = 470;
                         break;
                     case 'main-boy':
+                        salary = 480;
+                        break;
+                    case 'captain':
                         salary = 500;
                         break;
                     default:
@@ -490,7 +661,24 @@ module.exports = {
                     reject(err);
                 });
         });
-    }
+    },
+    notification: (notification) => {
+        return new Promise((resolve, reject) => {
+            const currentDate = new Date();
+            const notifications = {
+                notification: notification,
+                date: currentDate,
+            };
+            db.get().collection(collection.notificationCollection).insertOne(notifications)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    },
+
 
 
 

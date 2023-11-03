@@ -2,29 +2,30 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function ViewFine() {
+function ViewTe() {
     const { user_id } = useParams();
     const eventId = new URLSearchParams(window.location.search).get('eventId');
-    const [values, setValues] = useState({ finefor: '', fine: '' });
+    const [values, setValues] = useState({ tefor: '', te: '' });
     const navigate = useNavigate();
 
 
     useEffect(() => {
         axios
-            .get(`http://localhost:3001/viewfine/${user_id}?eventId=${eventId}`)
+            .get(`http://localhost:3001/viewte/${user_id}?eventId=${eventId}`)
             .then((res) => {
-                console.log(res.data.fine);
-                setValues(res.data.fine);
+
+                setValues(res.data.te);
             })
             .catch((error) => {
                 console.error(error);
+                navigate('/login')
             });
 
-    }, [user_id]);
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`http://localhost:3001/viewfine/${user_id}?eventId=${eventId}`, { values }).then((res) => {
+        axios.post(`http://localhost:3001/viewte/${user_id}?eventId=${eventId}`, { values }).then((res) => {
             if (res.data) {
                 navigate(-1)
             } else {
@@ -32,39 +33,38 @@ function ViewFine() {
             }
         });
     };
-
     return (
         <div className="container">
             <div className="row">
                 <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 g-5">
                     <form onSubmit={handleSubmit}>
-                        <legend>Edit Fine</legend>
+                        <legend>Edit TE</legend>
                         <div className="form-group mt-4">
-                            <label htmlFor="fineFor">Fine for</label>
+                            <label htmlFor="teFor">Travel expense for</label>
                             <input
                                 type="text"
                                 className="form-control"
-                                name="fineFor"
-                                id="fineFor"
-                                placeholder="Fine For"
-                                value={values.finefor || ''}
+                                name="tefor"
+                                id="te for"
+                                placeholder="te For"
+                                value={values.tefor || ''}
                                 onChange={(e) =>
-                                    setValues({ ...values, finefor: e.target.value })
+                                    setValues({ ...values, tefor: e.target.value })
                                 }
 
                             />
                         </div>
                         <div className="form-group mt-2">
-                            <label htmlFor="fine">Fine amount</label>
+                            <label htmlFor="te"> Amount</label>
                             <input
                                 type="number"
                                 className="form-control"
-                                name="fine"
-                                id="fine"
-                                placeholder="Fine"
-                                value={values.fine || ''}
+                                name="te"
+                                id="te"
+                                placeholder="te"
+                                value={values.te || ''}
                                 onChange={(e) =>
-                                    setValues({ ...values, fine: e.target.value })
+                                    setValues({ ...values, te: e.target.value })
                                 }
                             />
                         </div>
@@ -75,7 +75,7 @@ function ViewFine() {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default ViewFine;
+export default ViewTe

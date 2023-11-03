@@ -87,3 +87,9 @@
     align-items: center;
     justify-content: center;
 }
+
+.notification {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+}

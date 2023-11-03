@@ -20,9 +20,12 @@ const verifyUser = (req, res, next) => {
                 return res.json({ error: 'Error with token' });
             } else {
                 if (
-                    decoded.role === 'class-A' ||
-                    decoded.role === 'class-B' ||
-                    decoded.role === 'class-C' ||
+                    decoded.role === 'A1' ||
+                    decoded.role === 'A2' ||
+                    decoded.role === 'A3' ||
+                    decoded.role === 'A4' ||
+                    decoded.role === 'A5' ||
+
                     decoded.role === 'supervisor' ||
                     decoded.role === 'main-boy' ||
                     decoded.role === 'captain' ||
@@ -67,7 +70,7 @@ const verifyService = (req, res, next) => {
             } else {
                 console.log(decoded);
                 if (decoded.role === 'admin' ||
-                    decoded.role === 'main-boy') {
+                    decoded.role === 'captain') {
                     next();
                 } else {
                     return res.json({ error: 'Not admin' });
@@ -321,6 +324,12 @@ router.get('/total', verifyUser, (req, res) => {
         }
     });
 })
+router.get('/notification', verifyUser, (req, res) => {
+    userHelper.notification().then((notification) => {
+
+        res.json({ notification })
+    })
+})
 
 
 
@@ -338,6 +347,13 @@ router.get('/viewevent', verifyService, adminHelper.getAllEvents);
 router.delete('/admin/delete-event/:eventId', verifyAdmin, (req, res) => {
     const eventId = req.params.eventId;
     adminHelper.deleteEvent(eventId)
+        .then((response) => {
+            res.json({ status: 'ok' });
+        })
+});
+router.delete('/notification/:eventId', verifyAdmin, (req, res) => {
+    const eventId = req.params.eventId;
+    adminHelper.deleteNotification(eventId)
         .then((response) => {
             res.json({ status: 'ok' });
         })
@@ -419,6 +435,27 @@ router.get('/viewfine/:userId', verifyService, async (req, res) => {
 
     res.json({ fine })
 })
+router.get('/viewot/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+    let ot = await adminHelper.viewOt(userId, eventId)
+
+    res.json({ ot })
+})
+router.get('/viewsalary/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+    let salary = await adminHelper.viewSalary(userId, eventId)
+
+    res.json({ salary })
+})
+router.get('/viewte/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+    let te = await adminHelper.viewTe(userId, eventId)
+
+    res.json({ te })
+})
 router.post('/viewfine/:userId', verifyService, async (req, res) => {
     userId = req.params.userId
     const eventId = req.query.eventId;
@@ -426,6 +463,30 @@ router.post('/viewfine/:userId', verifyService, async (req, res) => {
     let fine = await adminHelper.updateFine(userId, eventId, req.body)
 
     res.json({ fine })
+})
+router.post('/viewsalary/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+
+    let salary = await adminHelper.updateSalary(userId, eventId, req.body)
+
+    res.json({ salary })
+})
+router.post('/viewot/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+
+    let ot = await adminHelper.updateOt(userId, eventId, req.body)
+
+    res.json({ ot })
+})
+router.post('/viewte/:userId', verifyService, async (req, res) => {
+    userId = req.params.userId
+    const eventId = req.query.eventId;
+
+    let te = await adminHelper.updateTe(userId, eventId, req.body)
+
+    res.json({ te })
 })
 router.post('/te/:userId', verifyService, async (req, res) => {
     try {
@@ -480,5 +541,10 @@ router.post('/verify/:id', verifyAdmin, (req, res) => {
     res.json('success');
 })
 router.get('/viewverifyuser', verifyAdmin, adminHelper.getEmpveriInfo)
-
+router.get('/calendar', verifyAdmin, adminHelper.getcalander)
+router.post('/notification', verifyAdmin, (req, res) => {
+    adminHelper.notification(req.body).then((response) => {
+        res.json({ status: 'ok' })
+    })
+})
 module.exports = router;

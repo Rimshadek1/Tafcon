@@ -25,6 +25,13 @@ import VerifyEmpl from './Pages/Admin/VerifyEmpl';
 import ViewFine from './Pages/Admin/ViewFine';
 import Te from './Pages/Admin/Te';
 import Roledetails from './Pages/Roledetails/Roledetails';
+import ViewOt from './Pages/Confirmedpdf/ViewOt';
+import ViewTe from './Pages/Confirmedpdf/ViewTe';
+import ViewSalary from './Pages/Confirmedpdf/ViewSalary';
+import Dasboard from './Pages/Admin/Dashboard/Dasboard';
+import Notification from './Pages/Admin/Notification/Notification';
+import Viewnotification from './Pages/Admin/Notification/Viewnotification';
+
 function App() {
   axios.defaults.withCredentials = true;
 
@@ -54,9 +61,21 @@ function App() {
             <Route path="/confirmed/:id" element={<Confirmedpdf />} />
             <Route path="/fine/:user_id" element={<Fine />} />
             <Route path="/viewfine/:user_id" element={<ViewFine />} />
+            <Route path="/viewot/:user_id" element={<ViewOt />} />
+            <Route path="/viewte/:user_id" element={<ViewTe />} />
+            <Route path="/viewsalary/:user_id" element={<ViewSalary />} />
             <Route path="/ot/:user_id" element={<Ot />} />
             <Route path="/te/:user_id" element={<Te />} />
             <Route path="/roledetails" element={<Roledetails />} />
+            <Route path="/dashboard" element={<Dasboard />} />
+            <Route path="/notification" element={<Notification />} />
+            <Route path="/viewnotification" element={<Viewnotification />} />
+
+
+
+
+
+
 
           </Routes>
         </UserContextProvider>

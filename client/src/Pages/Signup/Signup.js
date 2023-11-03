@@ -72,7 +72,7 @@ function Signup() {
                 </div>
                 <div class="pageTitle"></div>
                 <div class="right">
-                    <Link to="/login" class="headerButton">
+                    <Link to="/login" class="headerButton text-warning">
                         Login
                     </Link>
                 </div>
@@ -271,7 +271,7 @@ function Signup() {
                         <div className="form-button-group transparent">
                             <button
                                 type="submit"
-                                className="btn btn-primary btn-block btn-lg"
+                                className="btn btn-warning btn-block btn-lg"
                             >
                                 Register
                             </button>

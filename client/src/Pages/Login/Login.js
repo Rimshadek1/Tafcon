@@ -127,19 +127,15 @@ function Login() {
 
                         <div className="form-links mt-2">
                             <div>
-                                <Link to="/signup">Register Now</Link>
+                                <Link to="/signup" className='text-warning'>Register Now</Link>
                             </div>
-                            <div>
-                                <a href="app-forgot-password.html" className="text-muted">
-                                    Forgot Password?
-                                </a>
-                            </div>
+
                         </div>
 
                         <div className="form-button-group transparent">
                             <button
                                 type="submit"
-                                className="btn btn-primary btn-block btn-lg"
+                                className="btn btn-warning btn-block btn-lg"
                             >
                                 Log in
                             </button>

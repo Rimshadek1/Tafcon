@@ -309,13 +309,13 @@ a:focus {
 }
 
 .appBottomMenu .item.active:before {
-  background: #FF396F;
+  background: #FFB400;
 }
 
 .appBottomMenu .item.active .icon,
 .appBottomMenu .item.active ion-icon,
 .appBottomMenu .item.active strong {
-  color: #FF396F !important;
+  color: #FFB400 !important;
   font-weight: 500;
 }
 
@@ -5302,7 +5302,8 @@ textarea,
   content: "";
   display: block;
   height: 140px;
-  background: #FF396F;
+  background: #FFB400;
+
 }
 
 .wallet-card {

@@ -29,11 +29,11 @@ app.use(bodyParser.json());
 require('dotenv').config();
 
 // Making Build Folder as Public 
-app.use(express.static(path.join(__dirname, 'build')));
+// app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+// app.get('/', function (req, res) {
+//     res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 
 
 // catch 404 and forward to error handler
@@ -47,7 +47,7 @@ db.connect((err) => {
     else
         console.log("Database connected");
 });
-const Port = process.env.PORT
-app.listen(Port, () => {
-    console.log(`Server is running at ${Port}`);
+// const Port = process.env.PORT
+app.listen(3000, () => {
+    console.log(`Server is running at ${3000}`);
 });

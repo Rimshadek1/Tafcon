@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './css/Viewevents.css'
 function Viewevents() {
     const [events, setEvents] = useState([]);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -25,11 +26,22 @@ function Viewevents() {
                 setSuc('success okk')
             } else {
                 alert('status failed')
-                navigate('/')
+                navigate('/login')
             }
         }).catch(err => console.log(err))
     }, []);
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:3001/logout').then((res) => {
+                alert(res.data.message)
+                navigate('/login');
+            })
 
+        } catch (error) {
+            console.error(error);
+            navigate('/login');
+        }
+    };
 
     const handleDelete = (id) => {
         axios.delete(`http://localhost:3001/admin/delete-event/${id}`)
@@ -56,6 +68,9 @@ function Viewevents() {
 
     };
 
+
+
+
     return (
         <div>
             <section>
@@ -67,19 +82,39 @@ function Viewevents() {
                             </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/add-salary" className="btn btn-success ml-auto">
-                                Add Salary
-                            </a>
+                            <Link to="/empinfo" className="btn btn-info ml-auto">
+                                View Employees
+                            </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/view-salary" className="btn btn-warning ml-auto">
-                                View Salary
-                            </a>
+                            <Link to="/verifyemp" className="btn btn-success ml-auto">
+                                Verify Employees
+                            </Link>
                         </div>
                         <div className="col">
-                            <a href="/admin/withdraw" className="btn btn-danger ml-auto">
+                            <Link to="/viewwithdraw" className="btn btn-warning ml-auto">
+                                View Withdraw
+                            </Link>
+                        </div>
+                        <div className="col">
+                            <Link to="/withdraw" className="btn btn-danger ml-auto">
                                 Withdraw Salary
-                            </a>
+                            </Link>
+                        </div>
+                        <div className="col">
+                            <Link to='/sitedetails' className=' btn btn-success ml-auto'>
+                                Site details
+                            </Link>
+                        </div>
+                        <div className="col">
+                            <Link to='/dashboard' className=' btn btn-primary ml-auto'>
+                                dashboard
+                            </Link>
+                        </div>
+                        <div className="col">
+                            <Link to='/notification' className=' btn btn-primary ml-auto'>
+                                Notification
+                            </Link>
                         </div>
                     </div>
                     <table className="table mt-5">
@@ -102,12 +137,14 @@ function Viewevents() {
                                     <td>{event.time}</td>
                                     <td>{event.date}</td>
                                     <td>{event.event}</td>
-                                    <td>{event.slot}</td>
+                                    <td>
+                                        {event.slot === 0 ? "Slot is full" : event.slot}
+                                    </td>
                                     <td>
                                         <Link to={`/editevents/${event._id}`} className="btn btn-primary">
                                             Edit
                                         </Link>
-
+                                        &nbsp;&nbsp;
 
                                         <button
                                             className="btn btn-danger"
@@ -118,13 +155,15 @@ function Viewevents() {
                                     </td>
                                 </tr>
                             ))}
+
                         </tbody>
                     </table>
                     {deleteSuccess && (
-                        <div className="alert alert-success" role="alert">
+                        <div className="alert alert-danger delete-alert" role="alert">
                             Event deleted successfully!
                         </div>
                     )}
+                    <button className='btn btn-danger' onClick={handleLogout}>Logout</button>
                 </div>
             </section >
         </div >

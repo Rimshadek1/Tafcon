@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../UserContext/UserContext';
 
 function Login() {
 
     const [number, setNumber] = useState()
     const [password, setPassword] = useState()
     const navigate = useNavigate();
+    const { setLoggedInUsername, setId } = useContext(UserContext);
+
 
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
@@ -18,12 +21,21 @@ function Login() {
 
         axios.post('http://localhost:3001/login', formData)
             .then((res) => {
-                console.log(res.data);
                 if (res.data.status === 'success') {
                     if (res.data.role === 'admin') {
-                        navigate('/viewevents')
+                        // Store the JWT token (customize this part based on your server response)
+                        localStorage.setItem('jwtToken', res.data.token);
+
+                        setLoggedInUsername(number);
+                        setId(res.data.id);
+                        navigate('/viewevents');
                     } else {
-                        navigate('/')
+                        // Store the JWT token (customize this part based on your server response)
+                        localStorage.setItem('jwtToken', res.data.token);
+
+                        setLoggedInUsername(number);
+                        setId(res.data.id);
+                        navigate('/');
                     }
                 }
             })
@@ -37,11 +49,12 @@ function Login() {
                     window.location.reload();
                 }
             });
-
-
     };
 
 
+
+    console.log('setLoggedInUsername is a function:', typeof setLoggedInUsername === 'function');
+    console.log('setId is a function:', typeof setId === 'function');
 
     return (
         <div>
@@ -54,9 +67,7 @@ function Login() {
                 </div>
                 <div className="pageTitle"></div>
                 <div className="right">
-                    <a className="btn btn-success ml-auto" href="/admin">
-                        Admin
-                    </a>
+
                 </div>
             </div>
             {/* * App Header */}
@@ -116,19 +127,15 @@ function Login() {
 
                         <div className="form-links mt-2">
                             <div>
-                                <Link to="/signup">Register Now</Link>
+                                <Link to="/signup" className='text-warning'>Register Now</Link>
                             </div>
-                            <div>
-                                <a href="app-forgot-password.html" className="text-muted">
-                                    Forgot Password?
-                                </a>
-                            </div>
+
                         </div>
 
                         <div className="form-button-group transparent">
                             <button
                                 type="submit"
-                                className="btn btn-primary btn-block btn-lg"
+                                className="btn btn-warning btn-block btn-lg"
                             >
                                 Log in
                             </button>

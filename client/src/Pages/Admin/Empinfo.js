@@ -10,7 +10,7 @@ function Empinfo() {
 
     useEffect(() => {
 
-        axios.get('http://localhost:3001/viewuser').then((res) => {
+        axios.get('/viewuser').then((res) => {
             console.log(res.data);
             setUser(res.data)
         })
@@ -106,10 +106,10 @@ function Empinfo() {
                                     <td>
                                         <img
                                             className={`imaged w32 pointer-cursor ${zoomed === users._id ? 'zoom-image zoomed' : ''}`}
-                                            src={`http://127.0.0.1:3001/Profile-pictures/${users._id}.png`} // PNG image URL
+                                            src={`/Profile-pictures/${users._id}.png`} // PNG image URL
                                             onError={(e) => {
                                                 e.target.onerror = null; // Prevent infinite loop
-                                                e.target.src = `http://127.0.0.1:3001/Profile-pictures/${users._id}.jpg`; // Try JPG if PNG fails
+                                                e.target.src = `/Profile-pictures/${users._id}.jpg`; // Try JPG if PNG fails
                                             }}
                                             onClick={() => handleImageClick(users._id)} // Handle image click
                                             alt={`${users.name}'s Profile`}
@@ -118,10 +118,10 @@ function Empinfo() {
                                     <td>
                                         <img
                                             className={`imaged w32 pointer-cursor ${zoomeded === users._id ? 'zoom-image zoomed' : ''}`}
-                                            src={`http://127.0.0.1:3001/Proof/${users._id}.png`} // PNG image URL
+                                            src={`/Proof/${users._id}.png`} // PNG image URL
                                             onError={(e) => {
                                                 e.target.onerror = null; // Prevent infinite loop
-                                                e.target.src = `http://127.0.0.1:3001/Proof/${users._id}.jpg`; // Try JPG if PNG fails
+                                                e.target.src = `/Proof/${users._id}.jpg`; // Try JPG if PNG fails
                                             }}
                                             onClick={() => handleProofClick(users._id)} // Handle image click
                                             alt={`${users.name}'s Proof`}

@@ -11,7 +11,7 @@ function Roledetails() {
         navigate(-1);
     };
     useEffect(() => {
-        axios.get('http://localhost:3001/total').then(res => {
+        axios.get('/total').then(res => {
 
             setTotal(res.data.total)
             setRole(res.data.role)

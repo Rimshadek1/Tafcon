@@ -10,7 +10,7 @@ function VerifyEmpl() {
 
     useEffect(() => {
 
-        axios.get('http://localhost:3001/viewverifyuser').then((res) => {
+        axios.get('/viewverifyuser').then((res) => {
             console.log(res.data);
             setUser(res.data)
         })
@@ -34,7 +34,7 @@ function VerifyEmpl() {
         }
     };
     const verifyUseer = (userId) => {
-        axios.post(`http://localhost:3001/verify/${userId}`).then((res) => {
+        axios.post(`/verify/${userId}`).then((res) => {
             if (res.data === 'success') {
                 alert('successfully varified')
                 window.location.reload();
@@ -117,10 +117,10 @@ function VerifyEmpl() {
                                     <td>
                                         <img
                                             className={`imaged w32 pointer-cursor ${zoomed === users._id ? 'zoom-image zoomed' : ''}`}
-                                            src={`http://127.0.0.1:3001/Profile-pictures/${users._id}.png`} // PNG image URL
+                                            src={`/Profile-pictures/${users._id}.png`} // PNG image URL
                                             onError={(e) => {
                                                 e.target.onerror = null; // Prevent infinite loop
-                                                e.target.src = `http://127.0.0.1:3001/Profile-pictures/${users._id}.jpg`; // Try JPG if PNG fails
+                                                e.target.src = `/Profile-pictures/${users._id}.jpg`; // Try JPG if PNG fails
                                             }}
                                             onClick={() => handleImageClick(users._id)} // Handle image click
                                             alt={`${users.name}'s Profile`}
@@ -129,10 +129,10 @@ function VerifyEmpl() {
                                     <td>
                                         <img
                                             className={`imaged w32 pointer-cursor ${zoomeded === users._id ? 'zoom-image zoomed' : ''}`}
-                                            src={`http://127.0.0.1:3001/Proof/${users._id}.png`} // PNG image URL
+                                            src={`/Proof/${users._id}.png`} // PNG image URL
                                             onError={(e) => {
                                                 e.target.onerror = null; // Prevent infinite loop
-                                                e.target.src = `http://127.0.0.1:3001/Proof/${users._id}.jpg`; // Try JPG if PNG fails
+                                                e.target.src = `/Proof/${users._id}.jpg`; // Try JPG if PNG fails
                                             }}
                                             onClick={() => handleProofClick(users._id)} // Handle image click
                                             alt={`${users.name}'s Proof`}

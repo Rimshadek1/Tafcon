@@ -16,7 +16,7 @@ function Bookings() {
 
     // getting booked events
     useEffect(() => {
-        axios.get('http://localhost:3001/bookedevents')
+        axios.get('/bookedevents')
             .then((res) => {
                 if (res.data) {
                     // Reverse the order of events to implement LIFO

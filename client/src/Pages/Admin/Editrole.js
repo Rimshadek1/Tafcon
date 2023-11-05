@@ -6,14 +6,14 @@ function Editrole() {
     const [values, setValues] = useState();
     const navigate = useNavigate();
     useEffect(() => {
-        axios.get(`http://localhost:3001/edituser/${id}`).then((res) => {
+        axios.get(`/edituser/${id}`).then((res) => {
             console.log(res.data);
             setValues(res.data.user);
         });
     }, [id]);
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`http://localhost:3001/edituser/${id}`, values)
+        axios.post(`/edituser/${id}`, values)
             .then((res) => {
                 if (res.data.status === 'updated') {
                     navigate(-1)

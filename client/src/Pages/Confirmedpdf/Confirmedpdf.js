@@ -13,7 +13,7 @@ function Confirmedpdf() {
     const [isRefreshing, setIsRefreshing] = useState(false);
     // Take event details
     const fetchData = () => {
-        axios.get(`http://localhost:3001/isfine/${id}`)
+        axios.get(`/isfine/${id}`)
             .then((res) => {
                 if (res.data) {
                     setIsRefreshing(true);
@@ -45,7 +45,7 @@ function Confirmedpdf() {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:3001/confirmedpdf/${id}`)
+        axios.get(`/confirmedpdf/${id}`)
             .then((res) => {
                 if (res.data && res.data.users && res.data.users.length > 0) {
                     setValues(res.data.users);
@@ -61,7 +61,7 @@ function Confirmedpdf() {
     function handleOnsite(userId) {
         const data = { eventId: id };
         axios
-            .post(`http://localhost:3001/salary/${userId}`, data)
+            .post(`/salary/${userId}`, data)
             .then((response) => {
                 if (response.data.status === 'success') {
                     alert('Salary processing successful');

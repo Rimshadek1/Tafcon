@@ -11,7 +11,7 @@ function ViewTe() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:3001/viewte/${user_id}?eventId=${eventId}`)
+            .get(`/viewte/${user_id}?eventId=${eventId}`)
             .then((res) => {
 
                 setValues(res.data.te);
@@ -25,7 +25,7 @@ function ViewTe() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`http://localhost:3001/viewte/${user_id}?eventId=${eventId}`, { values }).then((res) => {
+        axios.post(`/viewte/${user_id}?eventId=${eventId}`, { values }).then((res) => {
             if (res.data) {
                 navigate(-1)
             } else {

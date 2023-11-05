@@ -16,7 +16,7 @@ function Home() {
     const [notifications, setNotifications] = useState([]);
     //all amounts
     useEffect(() => {
-        axios.get('http://localhost:3001/amount').then(res => {
+        axios.get('/amount').then(res => {
             if (res.data) {
                 setFine(res.data.fine.totalFine)
                 setWithraw(res.data.withdraw.totalWithdraw)
@@ -38,7 +38,7 @@ function Home() {
     const [mergedDetails, setMergedDetails] = useState([]);
     useEffect(() => {
         // Fetch salary details
-        axios.get('http://localhost:3001/viewSalary')
+        axios.get('/viewSalary')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetails(res.data.details);
@@ -50,7 +50,7 @@ function Home() {
             });
 
         // Fetch fine details
-        axios.get('http://localhost:3001/viewFine')
+        axios.get('/viewFine')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsFine(res.data.details);
@@ -61,7 +61,7 @@ function Home() {
             });
 
         // Fetch overtime details
-        axios.get('http://localhost:3001/ot')
+        axios.get('/ot')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsOt(res.data.details);
@@ -71,7 +71,7 @@ function Home() {
                 console.error('Error fetching OT data:', error);
             });
         // Fetch withdraw details
-        axios.get('http://localhost:3001/withdrawf')
+        axios.get('/withdrawf')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsWithdraw(res.data.details);
@@ -81,7 +81,7 @@ function Home() {
                 console.error('Error fetching withdraw data:', error);
             });
         // fetch Te details
-        axios.get('http://localhost:3001/te')
+        axios.get('/te')
             .then((res) => {
                 if (res.data.status === 'success') {
                     console.log(res.data.details);
@@ -141,7 +141,7 @@ function Home() {
 
     // getting events
     useEffect(() => {
-        axios.get('http://localhost:3001/getevents').then(res => {
+        axios.get('/getevents').then(res => {
 
 
             setEvents(res.data)
@@ -151,7 +151,7 @@ function Home() {
 
     //security
     useEffect(() => {
-        axios.get('http://localhost:3001/').then(res => {
+        axios.get('/').then(res => {
             if (res.data.status === 'success') {
                 setRole(res.data.role)
                 setSuc('success okk')
@@ -167,7 +167,7 @@ function Home() {
     //profilepicture
     useEffect(() => {
         // Make an HTTP GET request to fetch the image URL
-        axios.get('http://localhost:3001/profile-image')
+        axios.get('/profile-image')
             .then((res) => {
                 // Check if imageUrl is not empty before setting it
                 if (res.data.imageUrl) {
@@ -184,7 +184,7 @@ function Home() {
         const confirmed = window.confirm('Do you want to add this event to your list?');
 
         if (confirmed) {
-            axios.post(`http://localhost:3001/confirmbooking/${eventId}`)
+            axios.post(`/confirmbooking/${eventId}`)
                 .then((res) => {
                     if (res.data.status === 'success') {
                         alert('Booking confirmed');
@@ -203,7 +203,7 @@ function Home() {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:3001/notification')
+        axios.get('/notification')
             .then((res) => {
                 if (res.data && res.data.notification) {
                     console.log(res.data.notification);

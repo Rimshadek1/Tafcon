@@ -11,7 +11,7 @@ function ViewFine() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:3001/viewfine/${user_id}?eventId=${eventId}`)
+            .get(`/viewfine/${user_id}?eventId=${eventId}`)
             .then((res) => {
                 console.log(res.data.fine);
                 setValues(res.data.fine);
@@ -24,7 +24,7 @@ function ViewFine() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`http://localhost:3001/viewfine/${user_id}?eventId=${eventId}`, { values }).then((res) => {
+        axios.post(`/viewfine/${user_id}?eventId=${eventId}`, { values }).then((res) => {
             if (res.data) {
                 navigate(-1)
             } else {

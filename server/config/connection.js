@@ -6,9 +6,8 @@ const state = {
 };
 
 // mongodb connection string
-const url = mongoUrl;
+const url = 'mongodb+srv://rmzrimshad:vUNizzaoQC80cWIR@cluster0.pwep0et.mongodb.net/?retryWrites=true&w=majority';
 // database name
-const dbName = "Tafcon";
 
 // create a new mongodb client object
 const client = new MongoClient(url);
@@ -19,7 +18,7 @@ const connect = async (cb) => {
         // connecting to mongodb
         await client.connect();
         // setting up database name to the connected client
-        const db = client.db(dbName);
+        const db = client.db();
         // setting up database name to the state
         state.db = db;
         // callback after connected

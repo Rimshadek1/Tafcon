@@ -48,7 +48,7 @@ function Signup() {
         formData.append('role', 'Unknown');
         formData.append('registrationDate', registrationDate);
 
-        axios.post('http://localhost:3001/register', formData)
+        axios.post('/register', formData)
             .then((res) => {
 
                 navigate('/verifing')

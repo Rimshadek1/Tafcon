@@ -9,7 +9,7 @@ export function UserContextProvider({ children }) {
     const [id, setId] = useState(null); // Fix the variable name here
     const navigate = useNavigate();
     useEffect(() => {
-        axios.get('http://localhost:3001/profile', {
+        axios.get('/profile', {
             headers: {
                 Authorization: `Bearer ${authToken}`,
             },

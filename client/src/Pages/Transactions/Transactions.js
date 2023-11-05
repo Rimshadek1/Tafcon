@@ -13,7 +13,7 @@ function Transactions() {
     const [mergedDetails, setMergedDetails] = useState([]);
     useEffect(() => {
         // Fetch salary details
-        axios.get('http://localhost:3001/viewSalary')
+        axios.get('/viewSalary')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetails(res.data.details);
@@ -24,7 +24,7 @@ function Transactions() {
             });
 
         // Fetch fine details
-        axios.get('http://localhost:3001/viewFine')
+        axios.get('/viewFine')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsFine(res.data.details);
@@ -35,7 +35,7 @@ function Transactions() {
             });
 
         // Fetch overtime details
-        axios.get('http://localhost:3001/ot')
+        axios.get('/ot')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetailsOt(res.data.details);
@@ -45,7 +45,7 @@ function Transactions() {
                 console.error('Error fetching OT data:', error);
             });
         // Fetch withdraw details
-        axios.get('http://localhost:3001/withdrawf')
+        axios.get('/withdrawf')
             .then((res) => {
                 if (res.data.status === 'success') {
                     console.log(res.data.details);
@@ -56,7 +56,7 @@ function Transactions() {
                 console.error('Error fetching withdraw data:', error);
             });
         // fetch Te details
-        axios.get('http://localhost:3001/te')
+        axios.get('/te')
             .then((res) => {
                 if (res.data.status === 'success') {
                     console.log(res.data.details);

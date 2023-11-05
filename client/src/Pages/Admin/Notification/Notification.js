@@ -10,7 +10,7 @@ function Notification() {
         navigate(-1);
     };
     const handleSubmit = () => {
-        axios.post(`http://localhost:3001/notification`, { notification })
+        axios.post(`/notification`, { notification })
             .then((res) => {
                 if (res.data.status === 'ok') {
                     navigate(-1);

@@ -11,7 +11,7 @@ function Fine() {
     const [fine, setFine] = useState();
 
     const handleSubmit = () => {
-        axios.post(`http://localhost:3001/fine/${user_id}`, { eventId: eventId, fineFor, fine })
+        axios.post(`/fine/${user_id}`, { eventId: eventId, fineFor, fine })
             .then((res) => {
                 if (res.data) {
                     navigate(-1); // Go back to the previous page

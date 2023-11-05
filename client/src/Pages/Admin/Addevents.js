@@ -23,7 +23,7 @@ function Addevents() {
         formData.append('ref', ref);
         formData.append('timeevent', timeevent);
 
-        axios.post('http://localhost:3001/addevent', formData)
+        axios.post('/addevent', formData)
             .then((res) => {
                 // Check the response for success
                 if (res.data.status === 'ok') {

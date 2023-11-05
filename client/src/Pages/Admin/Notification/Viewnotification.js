@@ -7,7 +7,7 @@ function Viewnotification() {
     const [notifications, setNotifications] = useState([]);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
     useEffect(() => {
-        axios.get('http://localhost:3001/notification')
+        axios.get('/notification')
             .then((res) => {
                 if (res.data && res.data.notification) {
                     console.log(res.data.notification);
@@ -19,16 +19,16 @@ function Viewnotification() {
             })
             .catch((error) => {
                 console.error(error);
-                
+
             });
     }, []);
     const handleDelete = (id) => {
-        axios.delete(`http://localhost:3001/notification/${id}`)
+        axios.delete(`/notification/${id}`)
             .then((res) => {
                 // Check if the delete operation was successful
                 if (res.data.status === 'ok') {
                     setDeleteSuccess(true); // Set the success state to true
-                    axios.get('http://localhost:3001/notification')
+                    axios.get('/notification')
                         .then((res) => {
                             if (res.data && res.data.notification) {
                                 console.log(res.data.notification);

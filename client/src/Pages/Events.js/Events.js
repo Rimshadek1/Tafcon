@@ -28,7 +28,7 @@ function Events() {
     // Fetch events data
 
     useEffect(() => {
-        axios.get('http://localhost:3001/getevents').then(res => {
+        axios.get('/getevents').then(res => {
 
             console.log(res.data);
             setEvents(res.data)
@@ -41,7 +41,7 @@ function Events() {
         const confirmed = window.confirm('Do you want to add this event to your list?');
 
         if (confirmed) {
-            axios.post(`http://localhost:3001/confirmbooking/${eventId}`)
+            axios.post(`/confirmbooking/${eventId}`)
                 .then((res) => {
                     if (res.data.status === 'success') {
                         alert('Booking confirmed');

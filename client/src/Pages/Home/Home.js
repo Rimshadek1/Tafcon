@@ -155,6 +155,7 @@ function Home() {
             if (res.data.status === 'success') {
                 setRole(res.data.role)
                 setSuc('success okk')
+                navigate('/')
             } else {
                 navigate('/login')
                 window.location.reload();
@@ -258,7 +259,7 @@ function Home() {
                     </Link>
 
                     <Link to="/settings" className="headerButton">
-                        <img src={'http://127.0.0.1:3001/Profile-pictures/' + imageUrl} class="imaged w32" alt='profile' ></img>
+                        <img src={'/Profile-pictures/' + imageUrl} class="imaged w32" alt='profile' ></img>
                     </Link>
                 </div>
             </div >

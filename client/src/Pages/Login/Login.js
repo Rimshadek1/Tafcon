@@ -52,10 +52,6 @@ function Login() {
     };
 
 
-
-    console.log('setLoggedInUsername is a function:', typeof setLoggedInUsername === 'function');
-    console.log('setId is a function:', typeof setId === 'function');
-
     return (
         <div>
             {/* App Header */}

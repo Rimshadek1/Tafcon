@@ -24,6 +24,7 @@ function Viewevents() {
             if (res.data.status === 'success') {
                 console.log('ok');
                 setSuc('success okk')
+                navigate('/viewevents')
             } else {
                 alert('status failed')
                 navigate('/login')

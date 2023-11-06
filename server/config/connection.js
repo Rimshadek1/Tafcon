@@ -6,7 +6,7 @@ const state = {
 };
 
 // mongodb connection string
-const url = 'mongodb+srv://rmzrimshad:vUNizzaoQC80cWIR@cluster0.pwep0et.mongodb.net/?retryWrites=true&w=majority';
+const url = mongoUrl;
 // database name
 
 // create a new mongodb client object

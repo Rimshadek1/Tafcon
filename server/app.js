@@ -41,13 +41,13 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
+const Port = process.env.PORT
 db.connect((err) => {
     if (err)
         console.log('error ' + err);
     else
-        console.log("Database connected");
-});
-// const Port = process.env.PORT
-app.listen(3000, () => {
-    console.log(`Server is running at ${3000}`);
+        app.listen(Port, () => {
+            console.log(`Server is running at ${Port}`);
+        });
+    console.log("Database connected");
 });

@@ -33,7 +33,14 @@ function Empinfo() {
             setZoomeded(userId); // Zoom in
         }
     };
-
+    const deleteUseer = (userId) => {
+        axios.delete(`/deleteemp/${userId}`).then((res) => {
+            if (res.data) {
+                alert('successfully deleted')
+                window.location.reload();
+            }
+        })
+    }
 
     return (
         <div>
@@ -128,6 +135,14 @@ function Empinfo() {
                                         />
                                     </td>
                                     <td>
+
+                                        {users.role !== "admin" && (
+                                            <button onClick={() => deleteUseer(users._id)} className="btn btn-danger">
+                                                Delete
+                                            </button>
+                                        )}
+
+                                        &nbsp;&nbsp;
                                         <Link to={`/editrole/${users._id}`} className="btn btn-primary">
                                             Edit Role
                                         </Link>

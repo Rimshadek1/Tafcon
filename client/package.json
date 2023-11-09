@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.1",
     "bootstrap": "^5.3.2",
+    "cors": "^2.8.5",
     "ionicons": "^7.1.2",
     "jwt-decode": "^3.1.2",
     "popper.js": "^1.16.1",
@@ -48,5 +49,5 @@
   "devDependencies": {
     "webpack-cli": "^5.1.4"
   },
-  "proxy": "http://localhost:3000"
+"proxy": "http://localhost:3001"
 }

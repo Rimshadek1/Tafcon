@@ -1,9 +1,10 @@
 const { MongoClient } = require("mongodb");
 require('dotenv').config();
-const mongoUrl = process.env.mongoUrl;
+// const mongoUrl = process.env.mongoUrl;
 const state = {
     db: null,
 };
+mongoUrl = 'mongodb+srv://rimshithabshi1:0e0jNOC4svPQFJd7@cluster0.hwklrno.mongodb.net/tafcon?retryWrites=true&w=majority'
 
 // mongodb connection string
 const url = mongoUrl;
@@ -21,13 +22,22 @@ const connect = async (cb) => {
         const db = client.db();
         // setting up database name to the state
         state.db = db;
+
+        client.on('close', () => {
+            console.log('MongoDB connection closed');
+        });
+
+        client.on('reconnect', () => {
+            console.log('MongoDB reconnected');
+        });
+
         // callback after connected
         return cb();
     } catch (err) {
         // callback when an error occurs
         return cb(err);
     }
-};
+}
 
 // function to get the database instance
 const get = () => state.db;

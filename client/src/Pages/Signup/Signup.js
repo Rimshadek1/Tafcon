@@ -6,6 +6,7 @@ function Signup() {
     const [name, setName] = useState()
     const [place, setPlace] = useState()
     const [address, setAddress] = useState()
+    const [email, setEmail] = useState()
     const [age, setAge] = useState()
     const [height, setHeight] = useState()
     const [xp, setXp] = useState()
@@ -35,6 +36,7 @@ function Signup() {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('place', place);
+        formData.append('email', email);
         formData.append('adress', address);
         formData.append('age', age);
         formData.append('height', height);
@@ -49,15 +51,18 @@ function Signup() {
         formData.append('registrationDate', registrationDate);
 
         axios.post('/register', formData)
-            .then((res) => {
-
-                navigate('/verifing')
+            .then((response) => {
+                if (response.data.status === 'success') {
+                    navigate('/verifing');
+                } else if (response.data.error.includes('Mobile number is already registered')) {
+                    alert(response.data.error);
+                } else {
+                    alert('An error occurred during registration: ' + response.data.error);
+                }
             })
             .catch((error) => {
-
-                console.error(error);
                 alert('An error occurred during registration.');
-
+                console.error(error);
             });
     };
 
@@ -65,11 +70,7 @@ function Signup() {
     return (
         <div>
             <div class="appHeader no-border transparent position-absolute">
-                <div class="left">
-                    <a href="#" class="headerButton goBack">
-                        <ion-icon name="chevron-back-outline"></ion-icon>
-                    </a>
-                </div>
+
                 <div class="pageTitle"></div>
                 <div class="right">
                     <Link to="/login" class="headerButton text-warning">
@@ -126,24 +127,51 @@ function Signup() {
                                 </div>
                                 <div className="form-group basic">
                                     <div className="input-wrapper">
-                                        <label className="label" htmlFor="age">Age</label>
-                                        <input type="number"
+                                        <label className="label" htmlFor="email">Email Address</label>
+                                        <input
+                                            type="email"
                                             className="form-control"
                                             required
-                                            name="age" id="age"
+                                            name="email"
+                                            id="email"
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Your email address"
+                                            pattern="[a-zA-Z0-9._%+-]+@.+\..+"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group basic">
+                                    <div className="input-wrapper">
+                                        <label className="label" htmlFor="age">Age (In between 18-35 years old)</label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            required
+                                            name="age"
+                                            id="age"
                                             onChange={(e) => setAge(e.target.value)}
-                                            placeholder="Your Age" />
+                                            placeholder="Your Age"
+                                            min="16"
+                                            max="35"
+                                        />
                                     </div>
                                 </div>
                                 <div className="form-group basic">
                                     <div className="input-wrapper">
-                                        <label className="label" htmlFor="height">Height (In cm)</label>
-                                        <input type="number"
+                                        <label className="label" htmlFor="height">Height (In between 140-190 cm)</label>
+                                        <input
+                                            type="number"
                                             className="form-control"
                                             required
-                                            name="height" id="height"
+                                            name="height"
+                                            id="height"
                                             onChange={(e) => setHeight(e.target.value)}
-                                            placeholder="Your height" />
+                                            placeholder="Your height"
+                                            min="140"
+                                            max="190"
+                                        />
+
                                     </div>
                                 </div>
                                 <div className="form-group basic">
@@ -173,14 +201,14 @@ function Signup() {
 
                                 <div className="form-group basic">
                                     <div className="input-wrapper">
-                                        <label className="label" htmlFor="height">Currentstatus</label>
+                                        <label className="label" htmlFor="status">Currentstatus</label>
                                         <select
-                                            type="number"
+                                            type="text"
                                             className="form-control"
                                             required
-                                            name="height" id="height"
+                                            name="status" id="status"
                                             onChange={(e) => setCurrentStatus(e.target.value)}
-                                            placeholder="Your height"
+                                            placeholder="status"
                                         >
                                             <option >Select</option>
                                             <option value="Studing">Studing</option>
@@ -210,7 +238,7 @@ function Signup() {
                                 </div>
                                 <div className="form-group basic">
                                     <div className="input-wrapper">
-                                        <label className="label" htmlFor="password1">Password</label>
+                                        <label className="label" htmlFor="password1">Password (must contain at least one alphabet, one number, one special character, and be a minimum of 6 characters).<br /> Please remember, there is no way to change or update your password.</label>
                                         <input
                                             type="password"
                                             required
@@ -220,9 +248,12 @@ function Signup() {
                                             autoComplete="off"
                                             placeholder="Your Password"
                                             name="password1"
+                                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$"
                                         />
                                     </div>
                                 </div>
+
+
                                 <img alt='Add your profile please' width='200px' height='200px' src={image ? URL.createObjectURL(image) : ''}></img>
                                 <div className="form-group basic">
                                     <div className="input-wrapper">
@@ -236,7 +267,9 @@ function Signup() {
                                             placeholder="Your Profile Picture"
                                             name="image"
                                             onChange={handleImageChange}
+                                            accept=".jpg, .png"
                                         />
+
                                     </div>
                                 </div>
                                 <img alt='Add your Proof please' width='200px' height='200px' src={proof ? URL.createObjectURL(proof) : ''}></img>
@@ -252,6 +285,7 @@ function Signup() {
                                             placeholder="Your Proof Picture"
                                             name="proof"
                                             onChange={handleProofChange}
+                                            accept=".jpg, .png"
                                         />
                                     </div>
                                 </div>

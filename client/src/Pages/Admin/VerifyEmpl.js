@@ -41,6 +41,14 @@ function VerifyEmpl() {
             }
         })
     }
+    const deleteUseer = (userId) => {
+        axios.delete(`/deleteverifiy/${userId}`).then((res) => {
+            if (res.data) {
+                alert('successfully deleted')
+                window.location.reload();
+            }
+        })
+    }
     function formatDate(dateString) {
         const date = new Date(dateString);
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -139,6 +147,10 @@ function VerifyEmpl() {
                                         />
                                     </td>
                                     <td>
+                                        <button onClick={() => deleteUseer(users._id)} className="btn btn-danger">
+                                            Delete
+                                        </button>
+                                        &nbsp;&nbsp;
                                         <button onClick={() => verifyUseer(users._id)} className="btn btn-primary">
                                             Verify
                                         </button>

@@ -31,7 +31,7 @@ require('dotenv').config();
 // Making Build Folder as Public 
 // app.use(express.static(path.join(__dirname, 'build')));
 
-// app.get('/', function (req, res) {
+// app.get('*', function (req, res) {
 //     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 // });
 
@@ -42,6 +42,22 @@ app.use(function (req, res, next) {
 });
 
 const Port = process.env.PORT
+
+
+// async function startServer() {
+//     try {
+//         await db.connect();
+//         console.log("Database connected");
+
+//         app.listen(Port, () => {
+//             console.log(`Server is running at ${Port}`);
+//         });
+//     } catch (err) {
+//         console.error('Error: ' + err);
+//     }
+// }
+
+// startServer();
 db.connect((err) => {
     if (err)
         console.log('error ' + err);

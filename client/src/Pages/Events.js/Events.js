@@ -17,12 +17,13 @@ function Events() {
     };
 
     // Function to generate a random dark color
-    function getRandomDarkColor() {
-        const color = randomColor({
-            luminosity: 'dark', // Generates dark colors
-        });
-        return color;
-    }
+    // function getRandomDarkColor() {
+    //     const color = randomColor({
+    //         luminosity: 'dark', // Generates dark colors
+    //     });
+    //     return color;
+    // }
+    const bootstrapColors = ['bg-primary', 'bg-warning', 'bg-danger', 'bg-secondary'];
 
 
     // Fetch events data
@@ -30,8 +31,9 @@ function Events() {
     useEffect(() => {
         axios.get('/getevents').then(res => {
 
-            console.log(res.data);
-            setEvents(res.data)
+            const sortedEvents = res.data.sort((a, b) => new Date(b.currentDateTime) - new Date(a.currentDateTime));
+
+            setEvents(sortedEvents)
 
         }).catch(err => console.log(err))
     }, []);
@@ -96,7 +98,7 @@ function Events() {
                     <div className="section mt-2"
                         key={index}
                     >
-                        <div className="card-block mb-2" style={{ backgroundColor: getRandomDarkColor() }}>
+                        <div className={`card-block mb-2 ${bootstrapColors[index % bootstrapColors.length]}`} >
                             <div className="card-main">
                                 <div className="card-button dropdown">
                                     <button className="btn btn-warning rounded" onClick={() => handleAddButtonClick(event._id)}>
@@ -104,17 +106,25 @@ function Events() {
                                     </button>
                                 </div>
                                 <div className="balance">
-                                    <span className="label">Location</span>
+                                    <span className="label">Location of site</span>
                                     <h1 className="title">{event.location}</h1>
                                 </div>
                                 <div className="in">
                                     <div className="card-number">
-                                        <span className="label">Date</span>
+                                        <span className="label">Date of site</span>
                                         {event.date}
                                     </div>
+
                                     <div className="bottom">
+                                        <div className="card-number">
+                                            <span className="label">Reporting time</span>
+                                            {event.time}
+                                        </div>
+                                        &nbsp;&nbsp;
+                                        &nbsp;&nbsp;
+                                        &nbsp;&nbsp;
                                         <div className="card-expiry">
-                                            <span className="label">Slots</span>
+                                            <span className="label">Slots Available</span>
                                             {event.slot}
                                         </div>
 
@@ -128,7 +138,7 @@ function Events() {
 
             {/* body */}
             {/* footer */}
-            <div className="appBottomMenu">
+            <div div className="appBottomMenu" >
                 <Link to="/" className="item">
                     <div className="col">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" id="piechart"><g fill="#828282"><path d="M29 17.518a.5.5 0 0 0-.5-.5H15V3.5a.5.5 0 0 0-.5-.5C6.505 3 0 9.495 0 17.479 0 25.757 6.243 32 14.521 32 22.234 32 29 25.232 29 17.518zm-28-.039c0-7.266 5.787-13.206 13-13.47v13.509c0 .276.224.5.5.482h13.49c-.283 6.99-6.455 13-13.469 13C6.813 31 1 25.188 1 17.479z">

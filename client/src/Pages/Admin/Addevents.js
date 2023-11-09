@@ -8,6 +8,9 @@ function Addevents() {
     const [event, setEvent] = useState()
     const [type, setType] = useState()
     const [slot, setSlot] = useState()
+    const [slotCap, setSlotCap] = useState()
+    const [slotMain, setSlotMain] = useState()
+    const [slotSuper, setSlotSuper] = useState()
     const [ref, setRef] = useState()
     const [timeevent, setTimeevent] = useState()
     const navigate = useNavigate();
@@ -20,6 +23,9 @@ function Addevents() {
         formData.append('event', event);
         formData.append('type', type);
         formData.append('slot', slot);
+        formData.append('slotCap', slotCap);
+        formData.append('slotMain', slotMain);
+        formData.append('slotSuper', slotSuper);
         formData.append('ref', ref);
         formData.append('timeevent', timeevent);
 
@@ -57,6 +63,7 @@ function Addevents() {
                                 name="location"
                                 id="location"
                                 placeholder="Location of work"
+                                required
                                 onChange={(e) => setLocation(e.target.value)}
                             />
                         </div>
@@ -68,6 +75,7 @@ function Addevents() {
                                 className="form-control"
                                 name="time"
                                 id="time"
+                                required
                                 placeholder="Time of work"
                                 onChange={(e) => setTime(e.target.value)}
                             />
@@ -80,6 +88,7 @@ function Addevents() {
                                 className="form-control"
                                 name="date"
                                 id="date"
+                                required
                                 placeholder="Date of work"
                                 onChange={(e) => setDate(e.target.value)}
 
@@ -94,6 +103,7 @@ function Addevents() {
                                 name="event"
                                 placeholder="Event name"
                                 id="event"
+                                required
                                 onChange={(e) => setEvent(e.target.value)}
                             />
                         </div>
@@ -105,6 +115,7 @@ function Addevents() {
                                 name="ref"
                                 placeholder="Refer"
                                 id="ref"
+                                required
                                 onChange={(e) => setRef(e.target.value)}
                             />
                         </div>
@@ -114,6 +125,7 @@ function Addevents() {
                                 className="form-control"
                                 name="type"
                                 id="type"
+                                required
                                 onChange={(e) => setType(e.target.value)}
                             >
                                 <option value="select">select</option>
@@ -127,6 +139,7 @@ function Addevents() {
                                 className="form-control"
                                 name="Timeevent"
                                 id="Timeevent"
+                                required
                                 onChange={(e) => setTimeevent(e.target.value)}
                             >
                                 <option value="select">select</option>
@@ -137,13 +150,50 @@ function Addevents() {
                         </div>
 
                         <div className="form-group mt-2">
-                            <label htmlFor="slot">Slot Left</label>
+                            <label htmlFor="slotCap">Slot for captain</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                name="slotCap"
+                                placeholder="Slot for Captain"
+                                id="slotCap"
+                                required
+                                onChange={(e) => setSlotCap(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group mt-2">
+                            <label htmlFor="slotmain">Slot for Main Boy</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                name="slotmain"
+                                placeholder="Slot for main boy"
+                                id="slotmain"
+                                required
+                                onChange={(e) => setSlotMain(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group mt-2">
+                            <label htmlFor="slotmain">Slot for Supervisor</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                name="Supervisor"
+                                placeholder="Slot for Supervisor"
+                                id="Supervisor"
+                                required
+                                onChange={(e) => setSlotSuper(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group mt-2">
+                            <label htmlFor="slot">Slot Left for boys</label>
                             <input
                                 type="number"
                                 className="form-control"
                                 name="slot"
-                                placeholder="Slot left"
+                                placeholder="Slot left for boys"
                                 id="slot"
+                                required
                                 onChange={(e) => setSlot(e.target.value)}
                             />
                         </div>

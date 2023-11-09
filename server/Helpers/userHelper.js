@@ -29,19 +29,24 @@ module.exports = {
                     .collection(collection.verifyCollection)
                     .findOne({ number: userData.number });
                 if (existingUser) {
-                    const error = 'User with this mobile number already exists';
-                    reject(error);
-                    return;
+                    resolve('mobile_registered');
                 } else {
+                    const verified = await db.get()
+                        .collection(collection.userCollection)
+                        .findOne({ number: userData.number });
+                    if (verified) {
+                        resolve('mobile_registered_and_verified');
+                    } else {
 
-                    userData.password = await bcrypt.hash(userData.password, 10);
-                    db.get()
-                        .collection(collection.verifyCollection)
-                        .insertOne(userData)
-                        .then((data) => {
-                            resolve(data.insertedId);
+                        userData.password = await bcrypt.hash(userData.password, 10);
+                        db.get()
+                            .collection(collection.verifyCollection)
+                            .insertOne(userData)
+                            .then((data) => {
+                                resolve(data.insertedId);
 
-                        })
+                            })
+                    }
                 }
             }
 
@@ -58,6 +63,7 @@ module.exports = {
                     name: verify.name,
                     place: verify.place,
                     adress: verify.adress,
+                    email: verify.email,
                     age: verify.age,
                     height: verify.height,
                     number: verify.number,
@@ -109,21 +115,35 @@ module.exports = {
 
                     };
                 } else {
-                    console.log('not match password');
                     return {
                         status: false,
                         error: 'Wrong Mobile or Password'
                     };
                 }
             } else {
-                console.log('not login2');
-                return {
-                    status: false,
-                    error: 'User not found'
-                };
+                const verify = await db.get().collection(collection.verifyCollection).findOne({ number: userData.number });
+                if (verify) {
+                    const match = await bcrypt.compare(userData.password, verify.password);
+                    if (match) {
+                        return {
+                            status: false,
+                            error: 'User registered, On verification process, please wait until you are verified'
+                        }
+                    } else {
+                        return {
+                            status: false,
+                            error: 'Wrong Mobile or Password'
+                        };
+                    }
+                } else {
+
+                    return {
+                        status: false,
+                        error: 'User not Found'
+                    }
+                }
             }
         } catch (error) {
-            console.log('catch catch');
             throw error;
         }
     },

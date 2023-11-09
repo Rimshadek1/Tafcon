@@ -86,6 +86,15 @@ const verifyService = (req, res, next) => {
 router.post('/register', async (req, res) => {
     try {
         const id = await userHelper.register(req.body)
+        if (id === 'mobile_registered') {
+            res.json({ error: 'Mobile number is already registered and is currently going through the verification process. Please wait until it is verified.' });
+            return;
+        }
+        if (id === 'mobile_registered_and_verified') {
+            res.json({ error: 'Mobile number is already registered and verified.' });
+            return;
+        }
+
         let image = req.files.image;
         let imageName = id + '.jpg';
         if (image.mimetype === 'image/png') {
@@ -111,9 +120,7 @@ router.post('/register', async (req, res) => {
         }
         await imageProof.mv(destinationDirProof + imageNameProof);
 
-        res.json('success');
-
-
+        res.json({ status: 'success' });
 
     } catch (err) {
         console.error(err);
@@ -131,7 +138,7 @@ router.post('/login', (req, res) => {
                     name: response.user.name,
                     id: response.user._id
                 }, jwtsecret, { expiresIn: '1d' });
-                res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'Lax' }, {
+                res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' }, {
                     id: response.user._id,
                     number: response.user.number,
                     role: response.user.role,
@@ -139,11 +146,10 @@ router.post('/login', (req, res) => {
                 });
                 res.json({ status: 'success', role: response.user.role });
             } else {
-                res.status(401).json({ status: 'error', message: response.error });
+                res.json({ status: 'error', message: response.error });
             }
         })
         .catch((error) => {
-            console.error(error);
             res.status(500).json({ status: 'error', message: 'An error occurred during login.' });
         });
 });
@@ -162,9 +168,10 @@ router.get('/profile', (req, res) => {
 })
 router.get('/', verifyUser, (req, res) => {
     const token = req.cookies.token;
+    console.log(token);
     jwt.verify(token, jwtsecret, (err, decoded) => {
 
-        res.json({ status: 'success', id: decoded.id, role: decoded.role });
+        res.json({ status: 'please_load_again', id: decoded.id, role: decoded.role });
     })
 })
 router.post('/logout', (req, res) => {
@@ -340,7 +347,7 @@ router.get('/notification', verifyUser, (req, res) => {
 //admin routers
 
 router.get('/viewevents', verifyAdmin, (req, res) => {
-    res.json({ status: 'success' });
+    res.json({ status: 'please_reload' });
 });
 
 router.get('/viewevent', verifyService, adminHelper.getAllEvents);
@@ -357,6 +364,18 @@ router.delete('/notification/:eventId', verifyAdmin, (req, res) => {
         .then((response) => {
             res.json({ status: 'ok' });
         })
+});
+router.delete('/deleteverifiy/:userId', verifyAdmin, (req, res) => {
+    const userId = req.params.userId;
+    adminHelper.deleteverifiy(userId)
+
+    res.json({ status: 'ok' });
+});
+router.delete('/deleteemp/:userId', verifyAdmin, (req, res) => {
+    const userId = req.params.userId;
+    adminHelper.deleteemp(userId)
+
+    res.json({ status: 'ok' });
 });
 router.get('/editbutton/:eventId', verifyAdmin, async (req, res) => {
     let event = await adminHelper.getEventDetails(req.params.eventId)

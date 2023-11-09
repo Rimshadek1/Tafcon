@@ -10,8 +10,6 @@ function Login() {
     const navigate = useNavigate();
     const { setLoggedInUsername, setId } = useContext(UserContext);
 
-
-    axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -37,18 +35,14 @@ function Login() {
                         setId(res.data.id);
                         navigate('/');
                     }
-                }
-            })
-            .catch((error) => {
-                if (error.response && error.response.data.error) {
-                    alert('password or mobile is Wrong');
-                    window.location.reload();
                 } else {
-                    console.error(error);
-                    alert('An error occurred during login.');
-                    window.location.reload();
+                    alert('Login error: ' + res.data.message);
                 }
+            }).catch((error) => {
+                alert('An error occurred during login.');
+                console.error(error);
             });
+
     };
 
 

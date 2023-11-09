@@ -5,14 +5,14 @@ import './css/Viewevents.css'
 function Viewevents() {
     const [events, setEvents] = useState([]);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
-    const [suc, setSuc] = useState();
     const navigate = useNavigate()
     axios.defaults.withCredentials = true;
     useEffect(() => {
         // Make an HTTP GET request to your backend endpoint that retrieves events
         axios.get('/viewevent')
             .then((res) => {
-                setEvents(res.data); // Set the events data received from the backend
+                const sortedEvents = res.data.sort((a, b) => new Date(b.currentDateTime) - new Date(a.currentDateTime));
+                setEvents(sortedEvents);
             })
             .catch((error) => {
                 console.error(error);
@@ -21,9 +21,8 @@ function Viewevents() {
     useEffect(() => {
         axios.get('/viewevents').then(res => {
             console.log(res.data);
-            if (res.data.status === 'success') {
-                console.log('ok');
-                setSuc('success okk')
+            if (res.data.status === 'please_reload') {
+
                 navigate('/viewevents')
             } else {
                 alert('status failed')
@@ -127,6 +126,9 @@ function Viewevents() {
                                 <th scope="col">Date</th>
                                 <th scope="col">Event_name</th>
                                 <th scope="col">Slot_left</th>
+                                <th scope="col">Slot_left_Captain</th>
+                                <th scope="col">Slot_left_Mainboy</th>
+                                <th scope="col">Slot_left_Supervisor</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -141,6 +143,9 @@ function Viewevents() {
                                     <td>
                                         {event.slot === 0 ? "Slot is full" : event.slot}
                                     </td>
+                                    <td>{event.slotCap}</td>
+                                    <td>{event.slotMain}</td>
+                                    <td>{event.slotSuper}</td>
                                     <td>
                                         <Link to={`/editevents/${event._id}`} className="btn btn-primary">
                                             Edit

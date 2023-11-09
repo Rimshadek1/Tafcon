@@ -6,10 +6,12 @@ module.exports = {
     addEvent: (event) => {
         return new Promise((resolve, reject) => {
             event.slot = parseInt(event.slot)
+            event.slotCap = parseInt(event.slotCap)
+            event.slotMain = parseInt(event.slotMain)
+            event.slotSuper = parseInt(event.slotSuper)
             const currentDateTime = new Date().toISOString();
             event.currentDateTime = currentDateTime;
             db.get().collection(collection.eventCollection).insertOne(event).then((data) => {
-                console.log(data);
                 resolve(data.insertedId);
             })
         })
@@ -51,8 +53,6 @@ module.exports = {
     ,
     deleteEvent: (proId) => {
         return new Promise((resolve, reject) => {
-            console.log(proId);
-            console.log(new ObjectId(proId)); // Add `new` here
             db.get().collection(collection.eventCollection).deleteOne({ _id: new ObjectId(proId) })
                 .then((response) => {
                     resolve(response);
@@ -67,6 +67,32 @@ module.exports = {
         return new Promise((resolve, reject) => {
 
             db.get().collection(collection.notificationCollection).deleteOne({ _id: new ObjectId(proId) })
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+    ,
+    deleteverifiy: (userId) => {
+        return new Promise((resolve, reject) => {
+
+            db.get().collection(collection.verifyCollection).deleteOne({ _id: new ObjectId(userId) })
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+    ,
+    deleteemp: (userId) => {
+        return new Promise((resolve, reject) => {
+
+            db.get().collection(collection.userCollection).deleteOne({ _id: new ObjectId(userId) })
                 .then((response) => {
                     resolve(response);
                 })
@@ -98,6 +124,9 @@ module.exports = {
                     date: proDetails.date,
                     event: proDetails.event,
                     slot: proDetails.slot,
+                    slotCap: proDetails.slotCap,
+                    slotMain: proDetails.slotMain,
+                    slotSuper: proDetails.slotSuper,
 
                 }
             }).then((response) => {
@@ -128,8 +157,6 @@ module.exports = {
     },
     getcalander: (req, res) => {
         db.get().collection(collection.eventCollection).find().toArray().then((events) => {
-
-            console.log(events);
             res.json({ events })
         }).catch((error) => {
             console.error(error);
@@ -194,7 +221,7 @@ module.exports = {
                     _id: { $in: userIds.map((userId) => new ObjectId(userId)) }
                 }).toArray();
                 const userIdss = users.map(user => user._id);
-                console.log(userIdss);
+
                 const usersWithFines = await db.get().collection(collection.fineCollection).find({
                     user: { $in: userIdss },
                     eventId: new ObjectId(proId)
@@ -264,7 +291,6 @@ module.exports = {
     viewFine: (userId, userDetails) => {
 
         return new Promise((resolve, reject) => {
-            console.log(userDetails);
             db.get().collection(collection.fineCollection).findOne({
                 user: new ObjectId(userId),
                 eventId: new ObjectId(userDetails)
@@ -276,7 +302,7 @@ module.exports = {
     viewOt: (userId, userDetails) => {
 
         return new Promise((resolve, reject) => {
-            console.log(userDetails);
+
             db.get().collection(collection.otCollection).findOne({
                 user: new ObjectId(userId),
                 eventId: new ObjectId(userDetails)
@@ -286,7 +312,6 @@ module.exports = {
         })
     },
     viewTe: (userId, userDetails) => {
-
         return new Promise((resolve, reject) => {
             db.get().collection(collection.teCollection).findOne({
                 user: new ObjectId(userId),
@@ -400,7 +425,6 @@ module.exports = {
             )
                 .then((teResult) => {
                     if (teResult.modifiedCount === 1) {
-                        console.log('ok');
                         withdrawCollection.updateOne(
                             {
                                 userId: new ObjectId(userId),
@@ -573,10 +597,8 @@ module.exports = {
                     throw new Error('Salary record already exists for this event');
                 } else {
                     // Create the salary record with property checks
-                    console.log('eventdetails');
+
                     const eventdetails = await db.get().collection(collection.eventCollection).findOne({ _id: new ObjectId(events) })
-                    console.log(eventdetails);
-                    console.log('eventdetails');
                     const salaryRecord = {
                         user: user._id,
                         event: new ObjectId(events),
@@ -651,8 +673,7 @@ module.exports = {
     },
     deleteWithdraw: (proId) => {
         return new Promise((resolve, reject) => {
-            console.log(proId);
-            console.log(new ObjectId(proId)); // Add `new` here
+
             db.get().collection(collection.withdrawCollection).deleteOne({ _id: new ObjectId(proId) })
                 .then((response) => {
                     resolve(response);

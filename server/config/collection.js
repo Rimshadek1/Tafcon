@@ -8,5 +8,6 @@ module.exports = {
     teCollection: 'te',
     withdrawCollection: 'withdraw',
     salaryCollection: 'salary',
+    captainCollection: 'captain',
     notificationCollection: 'notification',
 }

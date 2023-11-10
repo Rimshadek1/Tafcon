@@ -2,10 +2,10 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import randomColor from 'randomcolor';
 
 function Events() {
     const [events, setEvents] = useState([]);
+    const [role, setRole] = useState([]);
 
 
     // goback
@@ -15,21 +15,13 @@ function Events() {
         e.preventDefault();
         navigate(-1);
     };
-
-    // Function to generate a random dark color
-    // function getRandomDarkColor() {
-    //     const color = randomColor({
-    //         luminosity: 'dark', // Generates dark colors
-    //     });
-    //     return color;
-    // }
-    const bootstrapColors = ['bg-primary', 'bg-warning', 'bg-danger', 'bg-secondary'];
+    const bootstrapColors = ['bg-primary', 'bg-info', 'bg-danger', 'bg-secondary', 'bg-success'];
 
 
     // Fetch events data
 
     useEffect(() => {
-        axios.get('/getevents').then(res => {
+        axios.get('http://localhost:3001/getevents').then(res => {
 
             const sortedEvents = res.data.sort((a, b) => new Date(b.currentDateTime) - new Date(a.currentDateTime));
 
@@ -38,12 +30,12 @@ function Events() {
         }).catch(err => console.log(err))
     }, []);
 
-
+    //booking
     function handleAddButtonClick(eventId) {
         const confirmed = window.confirm('Do you want to add this event to your list?');
 
         if (confirmed) {
-            axios.post(`/confirmbooking/${eventId}`)
+            axios.post(`http://localhost:3001/confirmbooking/${eventId}`)
                 .then((res) => {
                     if (res.data.status === 'success') {
                         alert('Booking confirmed');
@@ -60,6 +52,62 @@ function Events() {
             console.log('Add action canceled.');
         }
     }
+    function handleAddButtonClickMain(eventId) {
+        const confirmed = window.confirm('Do you want to add this event to your list?');
+
+        if (confirmed) {
+            axios.post(`http://localhost:3001/confirmbookingMain/${eventId}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        alert('Booking confirmed');
+                        navigate('/bookings');
+                    } else if (res.data.status === 'already booked') {
+                        alert('This event is already booked.');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            // Handle the case where the user clicked cancel
+            console.log('Add action canceled.');
+        }
+    }
+    function handleAddButtonClickSuper(eventId) {
+        const confirmed = window.confirm('Do you want to add this event to your list?');
+
+        if (confirmed) {
+            axios.post(`http://localhost:3001/confirmbookingSuper/${eventId}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        alert('Booking confirmed');
+                        navigate('/bookings');
+                    } else if (res.data.status === 'already booked') {
+                        alert('This event is already booked.');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            // Handle the case where the user clicked cancel
+            console.log('Add action canceled.');
+        }
+    }
+
+    useEffect(() => {
+        axios.get('http://localhost:3001/')
+            .then(res => {
+                if (res.data.status === 'please_load_again') {
+                    setRole(res.data.role);
+                } else {
+                    navigate('/login');
+                    window.location.reload();
+                }
+            })
+            .catch(err => console.log(err));
+    }, []);
+
     return (
         <div>
             {/* header */}
@@ -94,46 +142,159 @@ function Events() {
             {/* body */}
 
             <div id="appCapsule">
-                {events.map((event, index) => (
-                    <div className="section mt-2"
-                        key={index}
-                    >
-                        <div className={`card-block mb-2 ${bootstrapColors[index % bootstrapColors.length]}`} >
-                            <div className="card-main">
-                                <div className="card-button dropdown">
-                                    <button className="btn btn-warning rounded" onClick={() => handleAddButtonClick(event._id)}>
-                                        Add
-                                    </button>
-                                </div>
-                                <div className="balance">
-                                    <span className="label">Location of site</span>
-                                    <h1 className="title">{event.location}</h1>
-                                </div>
-                                <div className="in">
-                                    <div className="card-number">
-                                        <span className="label">Date of site</span>
-                                        {event.date}
+
+
+                {/* Mainboy */}
+                {["admin", "main-boy", 'captain'].includes(role) && events.some(event => event.slotMain > 0) && (
+                    <div>
+                        <div className="section-heading padding">
+                            <h2 className="title">Works for Mainboys</h2>
+                        </div>
+                        {events.map((event, index) => (
+                            // Only render the card if event.slotMain is greater than zero
+                            event.slotMain > 0 && (
+                                <div className="section mt-2" key={index}>
+                                    <div className={`card-block mb-2 ${bootstrapColors[index % bootstrapColors.length]}`}>
+                                        <div className="card-main">
+                                            <div className="card-button dropdown">
+                                                <button className="btn btn-warning rounded" onClick={() => handleAddButtonClickMain(event._id)}>
+                                                    Add
+                                                </button>
+                                            </div>
+                                            <div className="balance">
+                                                <span className="label">Location of site</span>
+                                                <h1 className="title">{event.location}</h1>
+                                            </div>
+                                            <div className="in">
+                                                <div className="card-number">
+                                                    <span className="label">Date of site</span>
+                                                    {event.date}
+                                                </div>
+
+                                                <div className="bottom">
+                                                    <div className="card-number">
+                                                        <span className="label">Reporting time</span>
+                                                        {event.time}
+                                                    </div>
+                                                    &nbsp;&nbsp;
+                                                    &nbsp;&nbsp;
+                                                    &nbsp;&nbsp;
+                                                    <div className="card-expiry">
+                                                        <span className="label">Slots Available</span>
+                                                        {event.slotMain}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
+                            )
+                        ))}
+                    </div>
+                )}
 
-                                    <div className="bottom">
+
+
+
+
+
+                {/* supervisors */}
+
+                {["admin", "main-boy", "supervisor", 'captain'].includes(role) && events.some(event => event.slotSuper > 0) && (
+                    <div>
+                        <div className="section-heading padding">
+                            <h2 className="title">Works for Supervisors</h2>
+                        </div>
+                        {events.map((event, index) => (
+                            // Only render the card if event.slotSuper is greater than zero
+                            event.slotSuper > 0 && (
+                                <div className="section mt-2" key={index}>
+                                    <div className={`card-block mb-2 ${bootstrapColors[index % bootstrapColors.length]}`}>
+                                        <div className="card-main">
+                                            <div className="card-button dropdown">
+                                                <button className="btn btn-warning rounded" onClick={() => handleAddButtonClickSuper(event._id)}>
+                                                    Add
+                                                </button>
+                                            </div>
+                                            <div className="balance">
+                                                <span className="label">Location of site</span>
+                                                <h1 className="title">{event.location}</h1>
+                                            </div>
+                                            <div className="in">
+                                                <div className="card-number">
+                                                    <span className="label">Date of site</span>
+                                                    {event.date}
+                                                </div>
+
+                                                <div className="bottom">
+                                                    <div className="card-number">
+                                                        <span className="label">Reporting time</span>
+                                                        {event.time}
+                                                    </div>
+                                                    &nbsp;&nbsp;
+                                                    &nbsp;&nbsp;
+                                                    &nbsp;&nbsp;
+                                                    <div className="card-expiry">
+                                                        <span className="label">Slots Available</span>
+                                                        {event.slotSuper}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        ))}
+                    </div>
+                )}
+
+
+
+                {/* events */}
+                <div className="section-heading padding">
+                    <h2 className="title">Works for Boys</h2>
+                </div>
+                {events.map((event, index) => (
+                    // Only render the card if event.slot is greater than zero
+                    event.slot > 0 && (
+                        <div className="section mt-2" key={index}>
+                            <div className={`card-block mb-2 ${bootstrapColors[index % bootstrapColors.length]}`}>
+                                <div className="card-main">
+                                    <div className="card-button dropdown">
+                                        <button className="btn btn-warning rounded" onClick={() => handleAddButtonClick(event._id)}>
+                                            Add
+                                        </button>
+                                    </div>
+                                    <div className="balance">
+                                        <span className="label">Location of site</span>
+                                        <h1 className="title">{event.location}</h1>
+                                    </div>
+                                    <div className="in">
                                         <div className="card-number">
-                                            <span className="label">Reporting time</span>
-                                            {event.time}
-                                        </div>
-                                        &nbsp;&nbsp;
-                                        &nbsp;&nbsp;
-                                        &nbsp;&nbsp;
-                                        <div className="card-expiry">
-                                            <span className="label">Slots Available</span>
-                                            {event.slot}
+                                            <span className="label">Date of site</span>
+                                            {event.date}
                                         </div>
 
+                                        <div className="bottom">
+                                            <div className="card-number">
+                                                <span className="label">Reporting time</span>
+                                                {event.time}
+                                            </div>
+                                            &nbsp;&nbsp;
+                                            &nbsp;&nbsp;
+                                            &nbsp;&nbsp;
+                                            <div className="card-expiry">
+                                                <span className="label">Slots Available</span>
+                                                {event.slot}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )
                 ))}
+
             </div>
 
             {/* body */}

@@ -203,6 +203,118 @@ module.exports = {
     }
 
     ,
+    BookingMain: (proId, userId) => {
+        let proObj = {
+            item: new ObjectId(proId),
+            quantity: 1
+        }
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userCart = await db.get().collection(collection.bookCollection).findOne({ user: new ObjectId(userId) });
+
+                if (userCart) {
+                    let proExist = userCart.events.findIndex(product => product.item == proId);
+                    if (proExist !== -1) {
+                        // Event is already booked; resolve with an appropriate message
+                        resolve('already booked');
+                    } else {
+                        // If user's cart already exists, add the new product id to the existing array
+                        db.get().collection(collection.bookCollection).updateOne(
+                            { user: new ObjectId(userId) },
+                            { $push: { events: proObj } }
+                        ).then(() => {
+                            // After booking, decrease the slot in the eventCollection
+                            db.get().collection(collection.eventCollection).updateOne(
+                                { _id: new ObjectId(proId), slotMain: { $gte: 1 } },
+                                { $inc: { slotMain: -1 } }
+                            ).then(() => {
+                                resolve('success');
+                            }).catch((error) => {
+                                reject(error);
+                            });
+                        });
+                    }
+                } else {
+                    // If user's cart doesn't exist, create a new cart object with a single array for products
+                    const cartObj = {
+                        user: new ObjectId(userId),
+                        events: [proObj]
+                    };
+                    db.get().collection(collection.bookCollection).insertOne(cartObj).then(() => {
+                        // After booking, decrease the slot in the eventCollection
+                        db.get().collection(collection.eventCollection).updateOne(
+                            { _id: new ObjectId(proId), slotMain: { $gte: 1 } },
+                            { $inc: { slotMain: -1 } }
+                        ).then(() => {
+                            resolve('success');
+                        }).catch((error) => {
+                            reject(error);
+                        });
+                    });
+                }
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    ,
+    BookingSuper: (proId, userId) => {
+        let proObj = {
+            item: new ObjectId(proId),
+            quantity: 1
+        }
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userCart = await db.get().collection(collection.bookCollection).findOne({ user: new ObjectId(userId) });
+
+                if (userCart) {
+                    let proExist = userCart.events.findIndex(product => product.item == proId);
+                    if (proExist !== -1) {
+                        // Event is already booked; resolve with an appropriate message
+                        resolve('already booked');
+                    } else {
+                        // If user's cart already exists, add the new product id to the existing array
+                        db.get().collection(collection.bookCollection).updateOne(
+                            { user: new ObjectId(userId) },
+                            { $push: { events: proObj } }
+                        ).then(() => {
+                            // After booking, decrease the slot in the eventCollection
+                            db.get().collection(collection.eventCollection).updateOne(
+                                { _id: new ObjectId(proId), slotSuper: { $gte: 1 } },
+                                { $inc: { slotSuper: -1 } }
+                            ).then(() => {
+                                resolve('success');
+                            }).catch((error) => {
+                                reject(error);
+                            });
+                        });
+                    }
+                } else {
+                    // If user's cart doesn't exist, create a new cart object with a single array for products
+                    const cartObj = {
+                        user: new ObjectId(userId),
+                        events: [proObj]
+                    };
+                    db.get().collection(collection.bookCollection).insertOne(cartObj).then(() => {
+                        // After booking, decrease the slot in the eventCollection
+                        db.get().collection(collection.eventCollection).updateOne(
+                            { _id: new ObjectId(proId), slotSuper: { $gte: 1 } },
+                            { $inc: { slotSuper: -1 } }
+                        ).then(() => {
+                            resolve('success');
+                        }).catch((error) => {
+                            reject(error);
+                        });
+                    });
+                }
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    ,
     getEventList: (userId) => {
         return new Promise(async (resolve, reject) => {
             let cartItems = await db.get().collection(collection.bookCollection).aggregate([

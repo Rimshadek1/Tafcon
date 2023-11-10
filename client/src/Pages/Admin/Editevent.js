@@ -8,14 +8,14 @@ function Editevent() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`/editbutton/${id}`).then((res) => {
+        axios.get(`http://localhost:3001/editbutton/${id}`).then((res) => {
             console.log(res.data);
             setValues(res.data.event);
         });
     }, [id]); // Make sure to add 'id' as a dependency in the useEffect
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`/editbutton/${id}`, values)
+        axios.post(`http://localhost:3001/editbutton/${id}`, values)
             .then((res) => {
                 if (res.data.status === 'updated') {
 

@@ -12,7 +12,7 @@ function ViewOt() {
 
     useEffect(() => {
         axios
-            .get(`/viewot/${user_id}?eventId=${eventId}`)
+            .get(`http://localhost:3001/viewot/${user_id}?eventId=${eventId}`)
             .then((res) => {
                 console.log(res.data.ot);
                 setValues(res.data.ot);
@@ -26,7 +26,7 @@ function ViewOt() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`/viewot/${user_id}?eventId=${eventId}`, { values }).then((res) => {
+        axios.post(`http://localhost:3001/viewot/${user_id}?eventId=${eventId}`, { values }).then((res) => {
             if (res.data) {
                 navigate(-1)
             } else {

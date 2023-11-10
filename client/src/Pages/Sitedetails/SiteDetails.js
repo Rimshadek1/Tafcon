@@ -20,7 +20,7 @@ function SiteDetails() {
     //getevents
     useEffect(() => {
         // Make an HTTP GET request to your backend endpoint that retrieves events
-        axios.get('/viewevent')
+        axios.get('http://localhost:3001/viewevent')
             .then((res) => {
                 if (Array.isArray(res.data)) {
                     // Convert date-time strings to Date objects

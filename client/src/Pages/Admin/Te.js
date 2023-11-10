@@ -10,7 +10,7 @@ function Te() {
     const [teFor, setTeFor] = useState();
     const [te, setTe] = useState();
     const handleSubmit = () => {
-        axios.post(`/te/${user_id}?eventId=${eventId}`, { teFor, te })
+        axios.post(`http://localhost:3001/te/${user_id}?eventId=${eventId}`, { teFor, te })
             .then((res) => {
                 if (res.data.status === 'ok') {
                     navigate(-1); // Go back to the previous page

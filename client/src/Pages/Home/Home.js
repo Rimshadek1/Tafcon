@@ -14,7 +14,7 @@ function Home() {
     const [notifications, setNotifications] = useState([]);
     //all amounts
     useEffect(() => {
-        axios.get('/amount').then(res => {
+        axios.get('http://localhost:3001/amount').then(res => {
             if (res.data) {
                 setFine(res.data.fine.totalFine)
                 setWithraw(res.data.withdraw.totalWithdraw)
@@ -36,7 +36,7 @@ function Home() {
     const [mergedDetails, setMergedDetails] = useState([]);
     useEffect(() => {
         // Fetch salary details
-        axios.get('/viewSalary')
+        axios.get('http://localhost:3001/viewSalary')
             .then((res) => {
                 if (res.data.status === 'success') {
                     setDetails(res.data.details);
@@ -82,7 +82,6 @@ function Home() {
         axios.get('/te')
             .then((res) => {
                 if (res.data.status === 'success') {
-                    console.log(res.data.details);
                     setDetailsTe(res.data.details);
                 }
             })
@@ -136,7 +135,7 @@ function Home() {
 
     // getting events
     useEffect(() => {
-        axios.get('/getevents').then(res => {
+        axios.get('http://localhost:3001/getevents').then(res => {
             const sortedEvents = res.data.sort((a, b) => new Date(b.currentDateTime) - new Date(a.currentDateTime));
 
             setEvents(sortedEvents)
@@ -150,6 +149,7 @@ function Home() {
             .then(res => {
                 if (res.data.status === 'please_load_again') {
                     setRole(res.data.role);
+                    console.log(res.data.role);
                     navigate('/');
                 } else {
                     navigate('/login');
@@ -163,7 +163,7 @@ function Home() {
     //profilepicture
     useEffect(() => {
         // Make an HTTP GET request to fetch the image URL
-        axios.get('/profile-image')
+        axios.get('http://localhost:3001/profile-image')
             .then((res) => {
                 // Check if imageUrl is not empty before setting it
                 if (res.data.imageUrl) {
@@ -175,12 +175,12 @@ function Home() {
                 console.error(error);
             });
     }, []);
-
+    //works bookings
     function handleAddButtonClick(eventId) {
         const confirmed = window.confirm('Do you want to add this event to your list?');
 
         if (confirmed) {
-            axios.post(`/confirmbooking/${eventId}`)
+            axios.post(`http://localhost:3001/confirmbooking/${eventId}`)
                 .then((res) => {
                     if (res.data.status === 'success') {
                         alert('Booking confirmed');
@@ -197,9 +197,51 @@ function Home() {
             console.log('Add action canceled.');
         }
     }
+    function handleAddButtonClickMain(eventId) {
+        const confirmed = window.confirm('Do you want to add this event to your list?');
 
+        if (confirmed) {
+            axios.post(`http://localhost:3001/confirmbookingMain/${eventId}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        alert('Booking confirmed');
+                        navigate('/bookings');
+                    } else if (res.data.status === 'already booked') {
+                        alert('This event is already booked.');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            // Handle the case where the user clicked cancel
+            console.log('Add action canceled.');
+        }
+    }
+    function handleAddButtonClickSuper(eventId) {
+        const confirmed = window.confirm('Do you want to add this event to your list?');
+
+        if (confirmed) {
+            axios.post(`http://localhost:3001/confirmbookingSuper/${eventId}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        alert('Booking confirmed');
+                        navigate('/bookings');
+                    } else if (res.data.status === 'already booked') {
+                        alert('This event is already booked.');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            // Handle the case where the user clicked cancel
+            console.log('Add action canceled.');
+        }
+    }
+    //notifications
     useEffect(() => {
-        axios.get('/notification')
+        axios.get('http://localhost:3001/notification')
             .then((res) => {
                 if (res.data && res.data.notification) {
                     setNotifications(res.data.notification);
@@ -213,7 +255,7 @@ function Home() {
     }, []);
     //site details
     useEffect(() => {
-        if (role === 'captain') {
+        if (role === 'captain' || 'admin') {
             setShowButton(true);
         }
     }, [role]);
@@ -253,7 +295,7 @@ function Home() {
                     </Link>
 
                     <Link to="/settings" className="headerButton">
-                        <img src={'/Profile-pictures/' + imageUrl} class="imaged w32" alt='profile' ></img>
+                        <img src={'http://localhost:3001/Profile-pictures/' + imageUrl} class="imaged w32" alt='profile' ></img>
                     </Link>
                 </div>
             </div >
@@ -443,92 +485,105 @@ function Home() {
 
 
                 {/* main boys */}
-                <div className="section full mt-4">
-                    <div className="section-heading padding">
-                        <h2 className="title">Works for Main boy</h2>
-                        <Link to="/events" className="link">View All</Link>
-                    </div>
-                    <div className='slider-container'>
-                        <div
-                            className='slider-box'
-                            ref={sliderRef}
-
-                            onMouseDown={handleMouseDown}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
-                            onMouseMove={handleMouseMove}
-                        >
-                            {events.map((event, index) => (
-                                <div
-                                    className={`boxes ${bootstrapColors[index % bootstrapColors.length]}`}                                        // style={{ backgroundColor: getRandomDarkColor() }}
-
-                                    key={index}
-                                >
-                                    <div className="content">
-                                        <div>
-                                            <h3 className='text-white location'>Location</h3>
-                                            <h1 className='text-white location1'>{event.location}</h1>
+                {(role === "admin" || role === "main-boy" || role === 'captain') && events.some(event => event.slotMain > 0) && (
+                    <div className="section full mt-2">
+                        <div className="section-heading padding">
+                            <h2 className="title">Works for Main boy</h2>
+                            <Link to="/events" className="link">View All</Link>
+                        </div>
+                        <div className='slider-container'>
+                            <div
+                                className='slider-box'
+                                ref={sliderRef}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onMouseMove={handleMouseMove}
+                            >
+                                {events.map((event, index) => (
+                                    // Only render the card if event.slotMain is greater than zero
+                                    event.slotMain > 0 && (
+                                        <div
+                                            className={`boxes ${bootstrapColors[index % bootstrapColors.length]}`}
+                                            key={index}
+                                        >
+                                            <div className="content">
+                                                <div>
+                                                    <h3 className='text-white location'>Location</h3>
+                                                    <h1 className='text-white location1'>{event.location}</h1>
+                                                </div>
+                                                <div>
+                                                    <h3 className='text-white slot'>Slot Left</h3>
+                                                    <h1 className='text-white slot1'>{event.slotMain}</h1>
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="btn btn-success rounded add"
+                                                onClick={() => handleAddButtonClickMain(event._id)}
+                                            >
+                                                Add
+                                            </button>
                                         </div>
-                                        <div>
-                                            <h3 className='text-white slot'>Slot Left</h3>
-                                            <h1 className='text-white slot1'>{event.slotMain}</h1>
-                                        </div>
-                                    </div>
-                                    <button className="btn btn-success rounded add"
-                                        onClick={() => handleAddButtonClick(event._id)}
-                                    >Add</button>
-                                </div>
-                            ))}
-
-
+                                    )
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
+
 
                 {/* supervisors */}
-                <div className="section full mt-4">
-                    <div className="section-heading padding">
-                        <h2 className="title">Works for Supervisors</h2>
-                        <Link to="/events" className="link">View All</Link>
-                    </div>
-                    <div className='slider-container'>
-                        <div
-                            className='slider-box'
-                            ref={sliderRef}
-
-                            onMouseDown={handleMouseDown}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
-                            onMouseMove={handleMouseMove}
-                        >
-                            {events.map((event, index) => (
-                                <div
-                                    className={`boxes ${bootstrapColors[index % bootstrapColors.length]}`}                                        // style={{ backgroundColor: getRandomDarkColor() }}
-
-                                    key={index}
-                                >
-                                    <div className="content">
-                                        <div>
-                                            <h3 className='text-white location'>Location</h3>
-                                            <h1 className='text-white location1'>{event.location}</h1>
+                {(role === "admin" || role === "main-boy" || role === 'supervisor' || role === 'captain') && events.some(event => event.slotSuper > 0) && (
+                    <div className="section full mt-2">
+                        <div className="section-heading padding">
+                            <h2 className="title">Works for Supervisors</h2>
+                            <Link to="/events" className="link">View All</Link>
+                        </div>
+                        <div className='slider-container'>
+                            <div
+                                className='slider-box'
+                                ref={sliderRef}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onMouseMove={handleMouseMove}
+                            >
+                                {events.map((event, index) => (
+                                    // Only render the card if event.slotSuper is greater than zero
+                                    event.slotSuper > 0 && (
+                                        <div
+                                            className={`boxes ${bootstrapColors[index % bootstrapColors.length]}`}
+                                            key={index}
+                                        >
+                                            <div className="content">
+                                                <div>
+                                                    <h3 className='text-white location'>Location</h3>
+                                                    <h1 className='text-white location1'>{event.location}</h1>
+                                                </div>
+                                                <div>
+                                                    <h3 className='text-white slot'>Slot Left</h3>
+                                                    <h1 className='text-white slot1'>{event.slotSuper}</h1>
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="btn btn-success rounded add"
+                                                onClick={() => handleAddButtonClickSuper(event._id)}
+                                            >
+                                                Add
+                                            </button>
                                         </div>
-                                        <div>
-                                            <h3 className='text-white slot'>Slot Left</h3>
-                                            <h1 className='text-white slot1'>{event.slotSuper}</h1>
-                                        </div>
-                                    </div>
-                                    <button className="btn btn-success rounded add"
-                                        onClick={() => handleAddButtonClick(event._id)}
-                                    >Add</button>
-                                </div>
-                            ))}
-
-
+                                    )
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
-                <div className="section full mt-4">
+
+
+
+                {/* boys */}
+                <div className="section full mt-2">
                     <div className="section-heading padding">
                         <h2 className="title">Works for Boys</h2>
                         <Link to="/events" className="link">View All</Link>
@@ -539,37 +594,40 @@ function Home() {
                         <div
                             className='slider-box'
                             ref={sliderRef}
-
                             onMouseDown={handleMouseDown}
                             onMouseUp={handleMouseUp}
                             onMouseLeave={handleMouseUp}
                             onMouseMove={handleMouseMove}
                         >
                             {events.map((event, index) => (
-                                <div
-                                    className={`boxes ${bootstrapColors[index % bootstrapColors.length]}`}                                        // style={{ backgroundColor: getRandomDarkColor() }}
-
-                                    key={index}
-                                >
-                                    <div className="content">
-                                        <div>
-                                            <h3 className='text-white location'>Location</h3>
-                                            <h1 className='text-white location1'>{event.location}</h1>
+                                // Only render the card if event.slot is greater than zero
+                                event.slot > 0 && (
+                                    <div
+                                        className={`boxes ${bootstrapColors[index % bootstrapColors.length]}`}
+                                        key={index}
+                                    >
+                                        <div className="content">
+                                            <div>
+                                                <h3 className='text-white location'>Location</h3>
+                                                <h1 className='text-white location1'>{event.location}</h1>
+                                            </div>
+                                            <div>
+                                                <h3 className='text-white slot'>Slot Left</h3>
+                                                <h1 className='text-white slot1'>{event.slot}</h1>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h3 className='text-white slot'>Slot Left</h3>
-                                            <h1 className='text-white slot1'>{event.slot}</h1>
-                                        </div>
+                                        <button
+                                            className="btn btn-success rounded add"
+                                            onClick={() => handleAddButtonClick(event._id)}
+                                        >
+                                            Add
+                                        </button>
                                     </div>
-                                    <button className="btn btn-success rounded add"
-                                        onClick={() => handleAddButtonClick(event._id)}
-                                    >Add</button>
-                                </div>
+                                )
                             ))}
-
-
                         </div>
                     </div>
+
 
                     <div >
                         {showButton && (
@@ -590,44 +648,46 @@ function Home() {
 
                     </div>
                 </div >
-                {/* body */}
-                {/* footer */}
-                < div className="appBottomMenu" >
-                    <Link to="/" className="item active">
-                        <div className="col">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" id="piechart"><g fill="#FFB400 "><path d="M29 17.518a.5.5 0 0 0-.5-.5H15V3.5a.5.5 0 0 0-.5-.5C6.505 3 0 9.495 0 17.479 0 25.757 6.243 32 14.521 32 22.234 32 29 25.232 29 17.518zm-28-.039c0-7.266 5.787-13.206 13-13.47v13.509c0 .276.224.5.5.482h13.49c-.283 6.99-6.455 13-13.469 13C6.813 31 1 25.188 1 17.479z">
-                            </path><path d="M17.5 15h13.999c.276.018.501-.224.501-.5C32 6.505 25.495 0 17.5 0a.5.5 0 0 0-.5.5v14.018c0 .276.224.5.5.482zM18 1.009c7.063.259 12.759 5.97 12.994 13.009H18V1.009z"></path></g></svg>
+            </div>
+
+            {/* body */}
+            {/* footer */}
+            < div className="appBottomMenu" >
+                <Link to="/" className="item active">
+                    <div className="col">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" id="piechart"><g fill="#FFB400 "><path d="M29 17.518a.5.5 0 0 0-.5-.5H15V3.5a.5.5 0 0 0-.5-.5C6.505 3 0 9.495 0 17.479 0 25.757 6.243 32 14.521 32 22.234 32 29 25.232 29 17.518zm-28-.039c0-7.266 5.787-13.206 13-13.47v13.509c0 .276.224.5.5.482h13.49c-.283 6.99-6.455 13-13.469 13C6.813 31 1 25.188 1 17.479z">
+                        </path><path d="M17.5 15h13.999c.276.018.501-.224.501-.5C32 6.505 25.495 0 17.5 0a.5.5 0 0 0-.5.5v14.018c0 .276.224.5.5.482zM18 1.009c7.063.259 12.759 5.97 12.994 13.009H18V1.009z"></path></g></svg>
 
 
 
-                            <strong>Overview</strong>
-                        </div>
-                    </Link>
-                    <Link to="/transactions" className="item">
-                        <div className="col">
-                            <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 16 16" id="text-file" width="25" height="25"><polygon fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" points="13 14 3 14 3 2 9.98 2 11.51 3.35 13 4.79 13 14"></polygon><polyline fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" points="9.78 2.54 9.78 5.54 12.78 5.54"></polyline><line x1="5" x2="8" y1="8" y2="8" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round"></line><line x1="5" x2="9" y1="10" y2="10" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round"></line>
-                                <line x1="5" x2="10" y1="12" y2="12" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round"></line></svg>
-                            <strong>Transaction</strong>
-                        </div>
-                    </Link>
-                    <Link to="/bookings" className="item">
-                        <div className="col">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" id="apps">
-                                <path fill="none" d="M0 0h24v24H0Z" data-name="Path 3624"></path><path fill="#525863"
-                                    d="M16.362 18.256a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.229 0a1.895 1.895 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.232 0a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.896-1.9Zm12.461-6.229a1.9 1.9 0 1 1 1.895 1.894 1.9 1.9 0 0 1-1.895-1.894Zm-6.229 0a1.895 1.895 0 1 1 1.895 1.894 1.9 1.9 0 0 1-1.895-1.894Zm-6.232 0a1.9 1.9 0 1 1 1.895 1.894A1.9 1.9 0 0 1 3.9 12.027Zm12.461-6.233a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.229 0a1.895 1.895 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.232 0a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.896-1.9Z" data-name="Path 2657"></path></svg>                        <strong>My Bookings</strong>
-                        </div>
-                    </Link>
-                    <Link to="/events" className="item">
-                        <div className="col">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" enable-background="new 0 0 24 24" viewBox="0 0 24 24" id="atm-card"><path d="M5.5,18.623h13c1.378,0,2.5-1.122,2.5-2.5V8.487v-0.61c0-1.378-1.122-2.5-2.5-2.5h-13c-1.378,0-2.5,1.122-2.5,2.5v0.61
+                        <strong>Overview</strong>
+                    </div>
+                </Link>
+                <Link to="/transactions" className="item">
+                    <div className="col">
+                        <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 16 16" id="text-file" width="25" height="25"><polygon fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" points="13 14 3 14 3 2 9.98 2 11.51 3.35 13 4.79 13 14"></polygon><polyline fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" points="9.78 2.54 9.78 5.54 12.78 5.54"></polyline><line x1="5" x2="8" y1="8" y2="8" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round"></line><line x1="5" x2="9" y1="10" y2="10" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round"></line>
+                            <line x1="5" x2="10" y1="12" y2="12" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round"></line></svg>
+                        <strong>Transaction</strong>
+                    </div>
+                </Link>
+                <Link to="/bookings" className="item">
+                    <div className="col">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" id="apps">
+                            <path fill="none" d="M0 0h24v24H0Z" data-name="Path 3624"></path><path fill="#525863"
+                                d="M16.362 18.256a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.229 0a1.895 1.895 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.232 0a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.896-1.9Zm12.461-6.229a1.9 1.9 0 1 1 1.895 1.894 1.9 1.9 0 0 1-1.895-1.894Zm-6.229 0a1.895 1.895 0 1 1 1.895 1.894 1.9 1.9 0 0 1-1.895-1.894Zm-6.232 0a1.9 1.9 0 1 1 1.895 1.894A1.9 1.9 0 0 1 3.9 12.027Zm12.461-6.233a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.229 0a1.895 1.895 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.895-1.9Zm-6.232 0a1.9 1.9 0 1 1 1.895 1.9 1.894 1.894 0 0 1-1.896-1.9Z" data-name="Path 2657"></path></svg>                        <strong>My Bookings</strong>
+                    </div>
+                </Link>
+                <Link to="/events" className="item">
+                    <div className="col">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" enable-background="new 0 0 24 24" viewBox="0 0 24 24" id="atm-card"><path d="M5.5,18.623h13c1.378,0,2.5-1.122,2.5-2.5V8.487v-0.61c0-1.378-1.122-2.5-2.5-2.5h-13c-1.378,0-2.5,1.122-2.5,2.5v0.61
 	v7.635C3,17.501,4.122,18.623,5.5,18.623z M20,16.123c0,0.827-0.673,1.5-1.5,1.5h-13c-0.827,0-1.5-0.673-1.5-1.5V8.987h16V16.123z
 	 M4,7.877c0-0.827,0.673-1.5,1.5-1.5h13c0.827,0,1.5,0.673,1.5,1.5v0.11H4V7.877z"></path><path d="M6,14.125h4.313c0.276,0,0.5-0.224,0.5-0.5s-0.224-0.5-0.5-0.5H6c-0.276,0-0.5,0.224-0.5,0.5S5.724,14.125,6,14.125z"></path></svg>                            <strong>Event</strong>
-                        </div>
-                    </Link>
-                    <Link to="/settings" className="item">
-                        <div className="col">
-                            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 128 128" width="25" height="25" viewBox="0 0 128 128" id="settings" stroke='#525863'>
-                                <path fill="#525863" d="M65.8,84.9c1.2,2.1,3,3.8,5,5c1.2,0.7,2.5,1.3,3.9,1.6c1.1,0.3,2.3,0.4,3.6,0.4c1.2,0,2.4-0.2,3
+                    </div>
+                </Link>
+                <Link to="/settings" className="item">
+                    <div className="col">
+                        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 128 128" width="25" height="25" viewBox="0 0 128 128" id="settings" stroke='#525863'>
+                            <path fill="#525863" d="M65.8,84.9c1.2,2.1,3,3.8,5,5c1.2,0.7,2.5,1.3,3.9,1.6c1.1,0.3,2.3,0.4,3.6,0.4c1.2,0,2.4-0.2,3
                             .6-0.4
 				c1.4-0.3,2.7-0.9,3.9-1.6c2.1-1.2,3.8-3,5-5c0.7-1.2,1.3-2.5,1.6-3.9c0.3-1.1,0.4-2.3,0.4-3.6c0-1.2-0.2-2.4-0.4-3.6
 				c-0.3-1.4-0.9-2.7-1.6-3.9c-1.2-2.1-3-3.8-5-5c-1.2-0.7-2.5-1.3-3.9-1.6c-1.1-0.3-2.3-0.4-3.6-0.4c-1.2,0-2.4,0.2-3.6,0.4
@@ -653,14 +713,14 @@ function Home() {
 					c1.2-0.7,2.5-1.3,4-1.6c1.2-0.3,2.4-0.5,3.6-0.5c1.3,0,2.5,0.2,3.6,0.5c1.4,0.4,2.7,0.9,4,1.6c2.1,1.3,3.9,3,5.2,5.2
 					c0.7,1.2,1.3,2.5,1.6,4c0.3,1.2,0.5,2.4,0.5,3.6c0,1.3-0.2,2.5-0.5,3.6c-0.4,1.4-0.9,2.7-1.6,4c-1.3,2.1-3,3.9-5.2,5.2
 					c-1.2,0.7-2.5,1.3-4,1.6c-1.2,0.3-2.4,0.5-3.6,0.5c-1.3,0-2.5-0.2-3.6-0.5C30.7,50.6,29.4,50,28.1,49.3z"></path></svg>
-                            <strong>Settings</strong>
-                        </div>
-                    </Link>
-                </ div>
-                {/* footer */}
-            </div >
-
+                        <strong>Settings</strong>
+                    </div>
+                </Link>
+            </ div>
+            {/* footer */}
         </div >
+
+
 
 
 

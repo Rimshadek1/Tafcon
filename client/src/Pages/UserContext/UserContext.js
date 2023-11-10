@@ -9,7 +9,7 @@ export function UserContextProvider({ children }) {
     const [id, setId] = useState(null);
     const navigate = useNavigate();
     useEffect(() => {
-        axios.get('/profile', {
+        axios.get('http://localhost:3001/profile', {
             headers: {
                 Authorization: `Bearer ${authToken}`,
             },

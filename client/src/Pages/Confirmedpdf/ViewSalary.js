@@ -11,7 +11,7 @@ function ViewSalary() {
     useEffect(() => {
         // Fetch the initial salary data and set it to the state
         axios
-            .get(`/viewsalary/${user_id}?eventId=${eventId}`)
+            .get(`http://localhost:3001/viewsalary/${user_id}?eventId=${eventId}`)
             .then((res) => {
                 console.log(res.data.salary);
                 setSalary(res.data.salary.salary);
@@ -25,7 +25,7 @@ function ViewSalary() {
     const handleUpdateSalary = () => {
         // Send the updated salary to the server
         axios
-            .post(`/viewsalary/${user_id}?eventId=${eventId}`, { salary })
+            .post(`http://localhost:3001/viewsalary/${user_id}?eventId=${eventId}`, { salary })
             .then((res) => {
                 if (res.data) {
                     navigate(-1);

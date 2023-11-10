@@ -1,13 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 function ViewWithdraw() {
     const [deleteSuccess, setDeleteSuccess] = useState(false);
     const [user, setUser] = useState([]);
     // const navigate = useNavigate()
     useEffect(() => {
-        axios.get('/withdraw')
+        axios.get('http://localhost:3001/withdraw')
             .then((res) => {
                 console.log(res.data);
                 setUser(res.data);
@@ -18,13 +18,13 @@ function ViewWithdraw() {
     }, []); // The empty dependency array ensures this effect runs once on component mount
 
     const handleDelete = (id) => {
-        axios.delete(`/delete-withdraw/${id}`)
+        axios.delete(`http://localhost:3001/delete-withdraw/${id}`)
             .then((res) => {
                 // Check if the delete operation was successful
                 if (res.data.status === 'ok') {
                     setDeleteSuccess(true); // Set the success state to true
                     // Fetch the updated events after successful deletion
-                    axios.get('/withdraw')
+                    axios.get('http://localhost:3001/withdraw')
                         .then((res) => {
                             setUser(res.data);
                         })

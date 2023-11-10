@@ -168,7 +168,6 @@ router.get('/profile', (req, res) => {
 })
 router.get('/', verifyUser, (req, res) => {
     const token = req.cookies.token;
-    console.log(token);
     jwt.verify(token, jwtsecret, (err, decoded) => {
 
         res.json({ status: 'please_load_again', id: decoded.id, role: decoded.role });
@@ -217,6 +216,34 @@ router.post('/confirmbooking/:proId', verifyUser, (req, res) => {
     jwt.verify(token, jwtsecret, (err, decoded) => {
         const UserId = decoded.id;
         userHelper.Booking(proId, UserId).then((response) => {
+            if (response === 'success') {
+                res.json({ status: 'success' });
+            } else if (response === 'already booked') {
+                res.json({ status: 'already booked' });
+            }
+        });
+    });
+});
+router.post('/confirmbookingMain/:proId', verifyUser, (req, res) => {
+    const proId = req.params.proId;
+    const token = req.cookies.token;
+    jwt.verify(token, jwtsecret, (err, decoded) => {
+        const UserId = decoded.id;
+        userHelper.BookingMain(proId, UserId).then((response) => {
+            if (response === 'success') {
+                res.json({ status: 'success' });
+            } else if (response === 'already booked') {
+                res.json({ status: 'already booked' });
+            }
+        });
+    });
+});
+router.post('/confirmbookingSuper/:proId', verifyUser, (req, res) => {
+    const proId = req.params.proId;
+    const token = req.cookies.token;
+    jwt.verify(token, jwtsecret, (err, decoded) => {
+        const UserId = decoded.id;
+        userHelper.BookingSuper(proId, UserId).then((response) => {
             if (response === 'success') {
                 res.json({ status: 'success' });
             } else if (response === 'already booked') {
@@ -413,6 +440,17 @@ router.post('/edituser/:userId', verifyAdmin, (req, res) => {
 
     })
 })
+router.get('/captain/:proId', verifyService, (req, res) => {
+    const proId = req.params.proId;
+    adminHelper.viewCaptains(proId)
+        .then((userData) => {
+            res.json({ users: userData });
+        })
+        .catch((error) => {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        });
+});
 router.get('/confirmedpdf/:proId', verifyService, (req, res) => {
     const proId = req.params.proId;
     adminHelper.confirmedPdf(proId)
@@ -538,6 +576,23 @@ router.post('/salary/:userId', verifyService, async (req, res) => {
         res.status(400).json({ status: 'error', message: error });
     }
 });
+router.post('/captain/:userId', verifyService, async (req, res) => {
+    const userId = req.params.userId;
+    const eventId = req.body.eventId;
+
+    try {
+        const result = await adminHelper.addCaptain(eventId, userId);
+
+        if (result === "user already a captain") {
+            res.json({ status: 'alreadyCaptain', message: 'User is already a captain.' });
+        } else {
+            res.json({ status: 'success', result });
+        }
+    } catch (error) {
+        res.status(400).json({ status: 'error', message: error });
+    }
+});
+
 router.post('/withdraw', verifyAdmin, (req, res) => {
     adminHelper.withDraw(req.body).then((response) => {
         if (response) {

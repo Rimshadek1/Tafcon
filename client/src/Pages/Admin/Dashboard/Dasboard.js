@@ -11,7 +11,7 @@ function Dashboard() {
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
-        axios.get('/calendar').then((res) => {
+        axios.get('http://localhost:3001/calendar').then((res) => {
             if (res.data && Array.isArray(res.data.events)) {
                 const formattedEvents = res.data.events.map((event) => ({
                     title: event.event,

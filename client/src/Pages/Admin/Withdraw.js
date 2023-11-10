@@ -7,7 +7,7 @@ function Withdraw() {
     const [amount, setAmount] = useState();
     const navigate = useNavigate();
     const handleSubmit = () => {
-        axios.post('/withdraw', { number, amount }).then((res) => {
+        axios.post('http://localhost:3001/withdraw', { number, amount }).then((res) => {
             if (res.data.status === 'success') {
                 alert('withdraw success');
                 navigate(-1)

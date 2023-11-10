@@ -209,6 +209,20 @@ module.exports = {
             }
         });
     },
+    viewCaptains: (proId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const captainDetails = await db.get().collection(collection.captainCollection).find({
+                    eventId: new ObjectId(proId)
+                }).toArray();
+
+                resolve(captainDetails);
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
     isFine: (proId) => {
         return new Promise(async (resolve, reject) => {
             const bookingDetails = await db.get().collection(collection.bookCollection).find({
@@ -661,6 +675,40 @@ module.exports = {
         }
     }
     ,
+    addCaptain: async (eventId, userId) => {
+        try {
+            const currentDate = new Date();
+
+            // Validate if eventId and userId have values
+            if (!eventId || !userId) {
+                throw new Error("Invalid eventId or userId");
+            }
+
+            // Check if the user is already a captain
+            let user = await db.get().collection(collection.captainCollection).findOne({ userId: new ObjectId(userId) });
+            if (user) {
+                return "user already a captain";
+            } else {
+                // If all validations pass, proceed with the insertion
+                let userData = await db.get().collection(collection.userCollection).findOne({ _id: new ObjectId(userId) });
+
+                const captain = {
+                    userId: new ObjectId(userId),
+                    name: userData.name,
+                    eventId: new ObjectId(eventId),
+                    role: 'captain',
+                    date: currentDate,
+                };
+                const result = await db.get().collection(collection.captainCollection).insertOne(captain);
+
+                return result.insertedId;
+            }
+        } catch (error) {
+            throw error;
+        }
+    },
+
+
     viewWithraw: (req, res) => {
         db.get().collection(collection.withdrawCollection).find().toArray()
             .then((users) => {

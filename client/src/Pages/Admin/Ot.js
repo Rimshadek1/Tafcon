@@ -10,7 +10,7 @@ function Ot() {
     const [otFor, setOtFor] = useState();
     const [ot, setOt] = useState();
     const handleSubmit = () => {
-        axios.post(`/ot/${user_id}`, { eventId: eventId, otFor, ot })
+        axios.post(`http://localhost:3001/ot/${user_id}`, { eventId: eventId, otFor, ot })
             .then((res) => {
                 if (res.data.status === 'ok') {
                     alert('Ot given');

@@ -12,7 +12,7 @@ function Settings() {
     const [imageUrl, setImageUrl] = useState('');
     useEffect(() => {
         // Make an HTTP GET request to fetch the image URL
-        axios.get('/profile-image')
+        axios.get('http://localhost:3001/profile-image')
             .then((res) => {
                 // Check if imageUrl is not empty before setting it
                 if (res.data.imageUrl) {
@@ -25,7 +25,7 @@ function Settings() {
     }, []);
     const handleLogout = async () => {
         try {
-            await axios.post('/logout').then((res) => {
+            await axios.post('http://localhost:3001/logout').then((res) => {
                 alert(res.data.message)
                 navigate('/login');
             })
@@ -71,7 +71,7 @@ function Settings() {
                         <a href="/">
                             <img
                                 className='imaged w100 rounded pointer-cursor'
-                                src={'/Profile-pictures/' + imageUrl}
+                                src={'http://localhost:3001/Profile-pictures/' + imageUrl}
                                 alt='profile'
                             />
                         </a>

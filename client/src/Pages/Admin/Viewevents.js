@@ -9,7 +9,7 @@ function Viewevents() {
     axios.defaults.withCredentials = true;
     useEffect(() => {
         // Make an HTTP GET request to your backend endpoint that retrieves events
-        axios.get('/viewevent')
+        axios.get('http://localhost:3001/viewevent')
             .then((res) => {
                 const sortedEvents = res.data.sort((a, b) => new Date(b.currentDateTime) - new Date(a.currentDateTime));
                 setEvents(sortedEvents);
@@ -19,7 +19,7 @@ function Viewevents() {
             });
     }, []);
     useEffect(() => {
-        axios.get('/viewevents').then(res => {
+        axios.get('http://localhost:3001/viewevents').then(res => {
             console.log(res.data);
             if (res.data.status === 'please_reload') {
 
@@ -32,7 +32,7 @@ function Viewevents() {
     }, []);
     const handleLogout = async () => {
         try {
-            await axios.post('/logout').then((res) => {
+            await axios.post('http://localhost:3001/logout').then((res) => {
                 alert(res.data.message)
                 navigate('/login');
             })
@@ -44,13 +44,13 @@ function Viewevents() {
     };
 
     const handleDelete = (id) => {
-        axios.delete(`/admin/delete-event/${id}`)
+        axios.delete(`http://localhost:3001/admin/delete-event/${id}`)
             .then((res) => {
                 // Check if the delete operation was successful
                 if (res.data.status === 'ok') {
                     setDeleteSuccess(true); // Set the success state to true
                     // Fetch the updated events after successful deletion
-                    axios.get('/viewevent')
+                    axios.get('http://localhost:3001/viewevent')
                         .then((res) => {
                             setEvents(res.data);
                         })

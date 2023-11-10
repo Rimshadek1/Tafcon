@@ -7,13 +7,15 @@ function Confirmedpdf() {
     const [values, setValues] = useState([]);
     const navigate = useNavigate();
     const [isFine, setIsFine] = useState();
+    const [role, setRole] = useState();
+    const [captains, setCaptains] = useState([]);
     const [onSite, setOnSite] = useState();
     const [otgiven, setOtGiven] = useState();
     const [tegiven, setTeGiven] = useState();
     const [isRefreshing, setIsRefreshing] = useState(false);
-    // Take event details
+    // Take is fine
     const fetchData = () => {
-        axios.get(`/isfine/${id}`)
+        axios.get(`http://localhost:3001/isfine/${id}`)
             .then((res) => {
                 if (res.data) {
                     setIsRefreshing(true);
@@ -43,9 +45,32 @@ function Confirmedpdf() {
         fetchData();
     }, [id]);
 
+    //booked users
+    useEffect(() => {
+        axios.get(`http://localhost:3001/captain/${id}`)
+            .then((res) => {
+                if (res.data && res.data.users.length > 0) {
+                    // Get an array of all user names
+                    const userNames = res.data.users.map(user => user.name);
+
+                    console.log('User Names:', userNames);
+
+                    setCaptains(userNames);
+                } else {
+                    alert('No users booked');
+                    navigate('/sitedetails');
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    }, [id]);
+
+
+
 
     useEffect(() => {
-        axios.get(`/confirmedpdf/${id}`)
+        axios.get(`http://localhost:3001/confirmedpdf/${id}`)
             .then((res) => {
                 if (res.data && res.data.users && res.data.users.length > 0) {
                     setValues(res.data.users);
@@ -61,7 +86,7 @@ function Confirmedpdf() {
     function handleOnsite(userId) {
         const data = { eventId: id };
         axios
-            .post(`/salary/${userId}`, data)
+            .post(`http://localhost:3001/salary/${userId}`, data)
             .then((response) => {
                 if (response.data.status === 'success') {
                     alert('Salary processing successful');
@@ -75,6 +100,24 @@ function Confirmedpdf() {
                 // Handle network errors or other unexpected errors
             });
     }
+    function handleCaptain(userId) {
+        const data = { eventId: id };
+
+        axios.post(`http://localhost:3001/captain/${userId}`, data)
+            .then((response) => {
+                if (response.data.status === 'success') {
+                    alert('Set Captain successful');
+                } else if (response.data.status === 'alreadyCaptain') {
+                    alert('User is already a captain.');
+                } else {
+                    alert('Set error: ' + response.data.message);
+                }
+            })
+            .catch((error) => {
+                alert('Network error: ' + error.message);
+            });
+    }
+
     const handleRefresh = () => {
         // Set isRefreshing to true to indicate a refresh is in progress
         setIsRefreshing(true);
@@ -85,6 +128,20 @@ function Confirmedpdf() {
         navigate(-1);
     };
     // goback
+
+    //security
+    useEffect(() => {
+        axios.get('http://localhost:3001/')
+            .then(res => {
+                if (res.data.status === 'please_load_again') {
+                    setRole(res.data.role);
+                } else {
+                    navigate('/login');
+                    window.location.reload();
+                }
+            })
+            .catch(err => console.log(err));
+    }, []);
     return (
         <div>
             {/* header */}
@@ -98,7 +155,7 @@ function Confirmedpdf() {
 
                 </div>
                 <div className="pageTitle">
-                    Confirm Booking
+                    Confirmed Booking
                 </div>
                 <div className="right">
                     <a href="/bookings" className="headerButton" data-bs-toggle="modal" data-bs-target="#DialogBasic">
@@ -118,10 +175,16 @@ function Confirmedpdf() {
             {/* header */}
 
             <section>
-                <div className="container">
-                    <div className="row mt-5">
+                <div className="container mt-5">
+                    <div className="row ">
 
                         <table className="table mt-3" >
+                            <div className="roles">
+                                <span className="header">
+                                    <h5>Captains: {captains.join(', ')}</h5>
+                                </span>
+                            </div>
+
                             <div className="tectcenetr">
 
 
@@ -195,6 +258,15 @@ function Confirmedpdf() {
                                                         Onsite
                                                     </button>
                                                 )}
+                                                &nbsp;&nbsp;
+                                                {role === "admin" && (user.role === "main-boy" || user.role === 'captain') ? (
+                                                    <button className='btn btn-icon bg-success' onClick={() => handleCaptain(user._id)}>
+                                                        ↑
+                                                    </button>
+                                                ) : null}
+
+
+
 
                                             </td>
                                         </tr>

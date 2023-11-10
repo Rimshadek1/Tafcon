@@ -49,7 +49,7 @@ const verifyAdmin = (req, res, next) => {
             if (err) {
                 return res.json({ error: 'Error with token' });
             } else {
-                console.log(decoded);
+
                 if (decoded.role === 'admin') {
                     next();
                 } else {
@@ -68,7 +68,6 @@ const verifyService = (req, res, next) => {
             if (err) {
                 return res.json({ error: 'Error with token' });
             } else {
-                console.log(decoded);
                 if (decoded.role === 'admin' ||
                     decoded.role === 'captain') {
                     next();
@@ -100,7 +99,6 @@ router.post('/register', async (req, res) => {
         if (image.mimetype === 'image/png') {
             imageName = id + '.png';
         }
-        console.log(id);
         const destinationDir = './public/Profile-pictures/';
         if (!fs.existsSync(destinationDir)) {
             fs.mkdirSync(destinationDir, { recursive: true });
@@ -113,7 +111,6 @@ router.post('/register', async (req, res) => {
         if (image.mimetype === 'image/png') {
             imageNameProof = id + '.png';
         }
-        console.log(id);
         const destinationDirProof = './public/Proof/';
         if (!fs.existsSync(destinationDirProof)) {
             fs.mkdirSync(destinationDirProof, { recursive: true });
